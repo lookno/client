@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+	minWidth="-Infinity" prefHeight="345.0" prefWidth="488.0"
+	xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="cn.neu.client.UserController">
+	<children>
+		<Pane fx:id="pane1" visible="true">
+			<Text layoutX="87.0" layoutY="96.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="用户名 : ">
+				<font>
+					<Font name="Microsoft YaHei UI" size="15.0" />
+				</font>
+			</Text>
+			<TextField fx:id="username" layoutX="87.0" layoutY="112.0"
+				prefHeight="39.0" prefWidth="315.0" promptText="请输入您的用户名"
+				style="-fx-background-radius: 0;">
+				<padding>
+					<Insets left="10.0" />
+				</padding>
+			</TextField>
+			<Text layoutX="87.0" layoutY="189.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="密   码 : ">
+				<font>
+					<Font name="Microsoft YaHei UI" size="15.0" />
+				</font>
+			</Text>
+			<PasswordField fx:id="password" layoutX="87.0" layoutY="205.0"
+				prefHeight="39.0" prefWidth="315.0" promptText="请输入您的密码"
+				style="-fx-background-radius: 0;">
+				<padding>
+					<Insets left="10.0" />
+				</padding>
+			</PasswordField>
+			<Pane layoutY="-1.0" prefHeight="65.0" prefWidth="488.0"
+				style="-fx-background-color: #444;">
+				<children>
+					<Text fill="WHITE" fontSmoothingType="LCD" layoutX="86.0"
+						layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Login">
+						<font>
+							<Font size="24.0" />
+						</font>
+					</Text>
+				</children>
+			</Pane>
+			<Text fx:id="forgetText" layoutX="191.0" layoutY="189.0"
+				onMouseClicked="#forgetTextOnMouseClicked" onMouseEntered="#forgetTextOnMouseEntered"
+				onMouseExited="#forgetTextOnMouseExited" strokeType="OUTSIDE"
+				strokeWidth="0.0" style="-fx-font-style: italic;" text="忘记密码 ?">
+				<font>
+					<Font name="System Italic" size="12.0" />
+				</font>
+			</Text>
+			<Pane layoutY="270.0" prefHeight="75.0" prefWidth="488.0"
+				style="-fx-background-color: #444;">
+				<children>
+					<Button fx:id="loginButton" layoutX="273.0" layoutY="23.0"
+						mnemonicParsing="false" onMouseClicked="#loginButtonOnMouseClicked"
+						prefHeight="30.0" prefWidth="129.0"
+						style="-fx-background-color: #e3e3e3; -fx-background-radius: 0;"
+						text="登  录">
+						<font>
+							<Font size="15.0" />
+						</font>
+					</Button>
+					<CheckBox layoutX="86.0" layoutY="30.0" mnemonicParsing="false"
+						style="-fx-border-radius:0 ;" text="记住密码" textFill="WHITE" />
+				</children>
+			</Pane>
+		</Pane>
+		<Pane fx:id="pane2" visible="false">
+			<Text layoutX="87.0" layoutY="96.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="用户名 : ">
+				<font>
+					<Font name="Microsoft YaHei UI" size="15.0" />
+				</font>
+			</Text>
+			<TextField fx:id="username2" layoutX="87.0" layoutY="112.0"
+				prefHeight="39.0" prefWidth="315.0" promptText="请输入您的用户名"
+				style="-fx-background-radius: 0;">
+				<padding>
+					<Insets left="10.0" />
+				</padding>
+			</TextField>
+			<Text layoutX="87.0" layoutY="189.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="邮    箱 : ">
+				<font>
+					<Font name="Microsoft YaHei UI" size="15.0" />
+				</font>
+			</Text>
+			<TextField fx:id="email" layoutX="87.0" layoutY="205.0"
+				prefHeight="39.0" prefWidth="315.0" promptText="请输入您绑定的邮箱"
+				style="-fx-background-radius: 0;">
+				<padding>
+					<Insets left="10.0" />
+				</padding>
+			</TextField>
+			<Pane layoutY="-1.0" prefHeight="65.0" prefWidth="488.0"
+				style="-fx-background-color: #444;">
+				<children>
+					<Text fill="WHITE" fontSmoothingType="LCD" layoutX="86.0"
+						layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Findback">
+						<font>
+							<Font size="24.0" />
+						</font>
+					</Text>
+				</children>
+			</Pane>
+			<Pane layoutY="270.0" prefHeight="75.0" prefWidth="488.0"
+				style="-fx-background-color: #444;">
+				<children>
+					<Button fx:id="verifyButton" layoutX="273.0" layoutY="23.0"
+						mnemonicParsing="false" onMouseClicked="#verifyButtonOnMouseClicked"
+						prefHeight="30.0" prefWidth="129.0"
+						style="-fx-background-color: #e3e3e3; -fx-background-radius: 0;"
+						text="验    证">
+						<font>
+							<Font size="15.0" />
+						</font>
+					</Button>
+				</children>
+			</Pane>
+		</Pane>
+
+		<Pane fx:id="pane3" visible="false">
+			<Text layoutX="87.0" layoutY="96.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="验证码 : ">
+				<font>
+					<Font name="Microsoft YaHei UI" size="15.0" />
+				</font>
+			</Text>
+			<TextField fx:id="vcode" layoutX="87.0" layoutY="112.0"
+				prefHeight="39.0" prefWidth="315.0" promptText="请输入验证码"
+				style="-fx-background-radius: 0;">
+				<padding>
+					<Insets left="10.0" />
+				</padding>
+			</TextField>
+			<Text layoutX="87.0" layoutY="189.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="新密码 : ">
+				<font>
+					<Font name="Microsoft YaHei UI" size="15.0" />
+				</font>
+			</Text>
+			<PasswordField fx:id="newpassword" layoutX="87.0"
+				layoutY="205.0" prefHeight="39.0" prefWidth="315.0" promptText="请输入您的新密码"
+				style="-fx-background-radius: 0;">
+				<padding>
+					<Insets left="10.0" />
+				</padding>
+			</PasswordField>
+			<Pane layoutY="-1.0" prefHeight="65.0" prefWidth="488.0"
+				style="-fx-background-color: #444;">
+				<children>
+					<Text fill="WHITE" fontSmoothingType="LCD" layoutX="86.0"
+						layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Changepass">
+						<font>
+							<Font size="24.0" />
+						</font>
+					</Text>
+				</children>
+			</Pane>
+			<Pane layoutY="270.0" prefHeight="75.0" prefWidth="488.0"
+				style="-fx-background-color: #444;">
+				<children>
+					<Button fx:id="changeButton" layoutX="273.0" layoutY="23.0"
+						mnemonicParsing="false" onMouseClicked="#changeButtonOnMouseClicked"
+						prefHeight="30.0" prefWidth="129.0"
+						style="-fx-background-color: #e3e3e3; -fx-background-radius: 0;"
+						text="修    改">
+						<font>
+							<Font size="15.0" />
+						</font>
+					</Button>
+				</children>
+			</Pane>
+			<Text onMouseClicked="#resendOnMouseClicked" onMouseEntered="#resendOnMouseEntered"
+				onMouseExited="#resendOnMouseExited" fx:id="resend" layoutX="330.0" layoutY="94.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="点击重新发送" />
+			<Text layoutX="261.0" layoutY="94.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="没有收到 ? " />
+		</Pane>
+		<Text fx:id="message" fill="#da40259e" fontSmoothingType="LCD" layoutX="299.0"
+			layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="信息"
+			visible="false" wrappingWidth="153.97265535593033">
+			<font>
+				<Font size="18.0" />
+			</font>
+		</Text>
+	</children>
+</Pane>
