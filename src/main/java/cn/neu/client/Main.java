@@ -6,12 +6,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 
 public class Main extends Application {
 	@Override
 	public void start(Stage stage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+			Pane root = FXMLLoader.load(getClass().getResource("login.fxml"));
 			Scene scene = new Scene(root);
 			stage.setTitle("登录");
 			stage.setScene(scene);

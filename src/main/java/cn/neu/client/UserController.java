@@ -2,11 +2,10 @@ package cn.neu.client;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.Gson;
-
 import cn.neu.global.Container;
 import cn.neu.http.Http;
+import cn.neu.recv.UserVo;
 import cn.neu.util.CipherUtil;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -17,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -125,11 +123,14 @@ public class UserController {
 		Map<String, String> map1 = new HashMap<>();
 		map1.put("username", uname);
 		map1.put("password", md5pass);
-		Map<String, Object> map = Http.postConnect("http://localhost:8080/storage/user/login", null,
+		String responseBody = Http.postConnect("http://localhost:8080/storage/user/login", null,
 				new Gson().toJson(map1));
+
 		if (Http.CODE == 200) {
 			// 登录成功
-			Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+			UserVo uv = new Gson().fromJson(responseBody, UserVo.class);
+			Container.token = uv.getToken();
+			Pane root = FXMLLoader.load(getClass().getResource("main.fxml"));
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
 			stage.setTitle("仓储管理系统");
@@ -141,7 +142,7 @@ public class UserController {
 			Container.scene = scene;
 		} else {
 			// 登录失败
-			message.setText((String) map.get("msg"));
+			message.setText((String) new Gson().fromJson(responseBody, Map.class).get("msg"));
 			message.setVisible(true);
 		}
 	}
@@ -180,7 +181,7 @@ public class UserController {
 		map1.put("username", Container.username);
 		map1.put("password", CipherUtil.generatePassword(unewpass));
 		map1.put("vCode", uvcode);
-		Map<String, Object> map = Http.postConnect("http://localhost:8080/storage/user/changepwd", null,
+		String responseBody = Http.postConnect("http://localhost:8080/storage/user/changepwd", null,
 				new Gson().toJson(map1));
 		if (Http.CODE == 200) {
 			message.setText("修改密码成功,请重新登录");
@@ -188,7 +189,7 @@ public class UserController {
 			pane3.setVisible(false);
 			pane1.setVisible(true);
 		} else {
-			message.setText((String) map.get("msg"));
+			message.setText((String) new Gson().fromJson(responseBody, Map.class).get("msg"));
 			message.setVisible(true);
 		}
 

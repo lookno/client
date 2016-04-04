@@ -1,8 +1,6 @@
 package cn.neu.http;
 
 import java.io.IOException;
-import java.util.Map;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -15,14 +13,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import cn.neu.util.JsonToMap;
 
 public class Http {
 	public static int CODE;
-	public static Map<String, Object> getConnect(String url, String token) throws Exception {
+
+	public static String getConnect(String url, String token) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 			HttpGet httpget = new HttpGet(url);
 			httpget.addHeader("Content-Type", "application/json");
@@ -44,16 +39,11 @@ public class Http {
 			};
 
 			String responseBody = httpclient.execute(httpget, responseHandler);
-			/*
-			 * Gson gson = new Gson(); Map<String, String> resultMap2 =
-			 * gson.fromJson(responseBody, new TypeToken<Map<String, String>>()
-			 * { }.getType()); System.out.println(resultMap2.get("msg"));
-			 */
-			return JsonToMap.toMap(responseBody);
+			return responseBody;
 		}
 	}
 
-	public static Map<String, Object> postConnect(String url, String token, String body) throws Exception {
+	public static String postConnect(String url, String token, String body) throws Exception {
 		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 			HttpPost httppost = new HttpPost(url);
 			httppost.addHeader("Content-Type", "application/json");
@@ -77,10 +67,7 @@ public class Http {
 			};
 
 			String responseBody = httpclient.execute(httppost, responseHandler);
-			Gson gson = new Gson();
-			Map<String, Object> resultMap = gson.fromJson(responseBody, new TypeToken<Map<String, String>>() {
-			}.getType());
-			return resultMap;
+			return responseBody;
 		}
 	}
 
