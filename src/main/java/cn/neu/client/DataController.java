@@ -1,12 +1,23 @@
 package cn.neu.client;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.http.HttpStatus;
+
 import com.google.gson.Gson;
 import cn.neu.global.Container;
 import cn.neu.http.Http;
+import cn.neu.recv.ChgPwdDto;
 import cn.neu.recv.Goods;
 import cn.neu.recv.GoodsVo;
+import cn.neu.recv.ProfitVo;
 import cn.neu.recv.Record;
 import cn.neu.recv.RecordVo;
+import cn.neu.recv.User;
+import cn.neu.util.CipherUtil;
 import cn.neu.util.MapToGoods;
 import cn.neu.util.MapToRecords;
 import cn.neu.vo.JXGoodsVo;
@@ -22,6 +33,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -29,6 +41,8 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class DataController {
@@ -109,17 +123,320 @@ public class DataController {
 	private DatePicker startTime;
 	@FXML
 	private DatePicker endTime;
+	@FXML
+	private TextField inCome;
+	@FXML
+	private TextField outCome;
+	@FXML
+	private TextField in_outCome;
+	@FXML
+	private Pane exceldataView;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox outputChoiceBox1;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox outputChoiceBox2;
+	@FXML
+	private TextField outputFileName;
+	@FXML
+	private Text filePosition;
+	@FXML
+	private Text fileTip;
 
 	@FXML
-	void searchProfitButtonOnMouseClicked(MouseEvent me){
-		//System.out.println();startTime.getValue()
-	}
+	private Pane userManageView;
 	@FXML
-	void listProfitsButtononMouseClicked(MouseEvent me){
+
+	private Pane changePassPane;
+	@FXML
+	private PasswordField oldPass;
+	@FXML
+	private PasswordField newPass;
+	@FXML
+	private PasswordField newPass2;
+	@FXML
+	private Text changePassTip;
+	@FXML
+	private Text oldPassTip;
+	@FXML
+	private Text newPassTip;
+	@FXML
+	private Text newPassTip2;
+
+	@FXML
+	private Pane registerPane;
+	@FXML
+	private TextField rUserName;
+	@FXML
+	private PasswordField rPassword;
+	@FXML
+	private TextField rEmail;
+	@FXML
+	private TextField rPhone;
+	@FXML
+	private Text rUserNameTip;
+	@FXML
+	private Text rPasswordTip;
+	@FXML
+	private Text rEmailTip;
+	@FXML
+	private Text rPhoneTip;
+	@FXML
+	private Text rRegTip;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox rUserType;
+	@FXML
+	private Text rTypeTip;
+	@FXML
+	void confirmRegisterButtonOnMouseClicked() throws Exception {
+		String rname = rUserName.getText();
+		String rpass = CipherUtil.generatePassword(rPassword.getText());
+		String remail = rEmail.getText();
+		String rphone = rPhone.getText();
+		User user = new User();
+		user.setUsername(rname);
+		user.setPassword(rpass);
+		user.setEmail(remail);
+		user.setPhone(rphone);
+		user.setPermission(Container.userType+2);
+		String responseBody = null;
+		responseBody = Http.postConnect("http://localhost:8080/storage/user/register", Container.token,
+				new Gson().toJson(user));
+
+		if(Http.CODE == 200){
+			rRegTip.setText("注册成功");
+			rRegTip.setVisible(true);
+		} else if(Http.CODE ==400){
+			Map<String, Object> map = new Gson().fromJson(responseBody, Map.class);
+			String pos = (String) map.get("pos");
+			if (pos.equals("1")) {
+				rUserNameTip.setText((String) map.get("msg"));
+				rUserNameTip.setVisible(true);
+			} else if (pos.equals("2")) {
+				rPasswordTip.setText((String) map.get("msg"));
+				rPasswordTip.setVisible(true);
+			} else if (pos.equals("3")) {
+				rTypeTip.setText((String) map.get("msg"));
+				rTypeTip.setVisible(true);
+			}else if (pos.equals("4")) {
+				rEmailTip.setText((String) map.get("msg"));
+				rEmailTip.setVisible(true);
+			}else if (pos.equals("5")) {
+				rPhoneTip.setText((String) map.get("msg"));
+				rPhoneTip.setVisible(true);
+			}
+		}
+	}
+
+	@FXML
+	void cancelRegisterButtonOnMouseClicked() {
+		userManageView.setVisible(false);
+	}
+
+	@FXML
+	void registerButtonOnMouseClicked() {
+		exceldataView.setVisible(false);
+		addView.setVisible(false);
+		listView.setVisible(false);
+		profitView.setVisible(false);
+		userManageView.setVisible(true);
+		changePassPane.setVisible(false);
+		registerPane.setVisible(true);
+		rUserNameTip.setVisible(false);
+		rPasswordTip.setVisible(false);
+		rTypeTip.setVisible(false);
+		rEmailTip.setVisible(false);
+		rPhoneTip.setVisible(false);
+		rRegTip.setVisible(false);
+		rUserName.clear();
+		rPassword.clear();
+		rEmail.clear();
+		rPhone.clear();
+
+		rUserType.setItems(FXCollections.observableArrayList("管理员(可读可写)","普通用户(只读)"));
+		rUserType.getSelectionModel().selectedIndexProperty().addListener(
+				(ObservableValue<? extends Number> ov1, Number oldVal, Number newVal) -> {
+					System.out.println(newVal.intValue());
+					Container.userType = newVal.intValue();
+				});
+	}
+
+	/*************
+	 * change pass
+	 *
+	 * @throws Exception
+	 ***********************/
+	@FXML
+	void confirmChangePassButtonOnMouseClicked() throws Exception {
+		String oldPas = oldPass.getText();
+		String newPas = newPass.getText();
+		String newPas2 = newPass2.getText();
+
+		if (!newPas.equals(newPas2)) {
+			newPassTip.setText("两次输入的新密码不一致");
+			newPassTip.setVisible(true);
+		}
+		String responseBody = null;
+		ChgPwdDto c = new ChgPwdDto();
+		c.setOldPass(oldPas);
+		c.setNewPass(newPas);
+		responseBody = Http.postConnect("http://localhost:8080/storage/user/chgpwd", Container.token,
+				new Gson().toJson(c));
+
+		if (Http.CODE == 200) {
+			System.out.println(new Gson().fromJson(responseBody, Map.class).toString());
+			changePassTip.setText("修改密码成功");
+			changePassTip.setVisible(true);
+			oldPassTip.setVisible(false);
+			newPassTip.setVisible(false);
+			newPassTip2.setVisible(false);
+		} else if (Http.CODE == 400) {
+			System.out.println(new Gson().fromJson(responseBody, Map.class).toString());
+			Map<String, Object> map = new Gson().fromJson(responseBody, Map.class);
+			String pos = (String) map.get("pos");
+			if (pos.equals("1")) {
+				oldPassTip.setText((String) map.get("msg"));
+				oldPassTip.setVisible(true);
+			} else if (pos.equals("2")) {
+				newPassTip.setText((String) map.get("msg"));
+				newPassTip.setVisible(true);
+			}
+		}
+
+	}
+
+	@FXML
+	void cancelPassButtonOnMouseClicked() {
+		userManageView.setVisible(false);
+	}
+
+	@FXML
+	void changePassButtonOnMouseClicked() {
+		exceldataView.setVisible(false);
+		addView.setVisible(false);
+		listView.setVisible(false);
+		profitView.setVisible(false);
+		userManageView.setVisible(true);
+		changePassPane.setVisible(true);
+		registerPane.setVisible(false);
+		changePassTip.setVisible(false);
+		oldPassTip.setVisible(false);
+		newPassTip.setVisible(false);
+		newPassTip2.setVisible(false);
+		oldPass.clear();
+		newPass.clear();
+		newPass2.clear();
+	}
+
+	/*************** change pass ***************/
+
+	@SuppressWarnings("unchecked")
+	@FXML
+	void outputDataButtonOnMouseClicked(MouseEvent me) {
+		exceldataView.setVisible(true);
+		filePosition.setVisible(false);
+		fileTip.setVisible(false);
+		addView.setVisible(false);
+		listView.setVisible(false);
+		profitView.setVisible(false);
+		outputChoiceBox1.setItems(FXCollections.observableArrayList("库存商品", "账务记录"));
+		outputChoiceBox1.getSelectionModel().selectedIndexProperty()
+				.addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
+					System.out.print(newVal.intValue());
+					Container.type1 = newVal.intValue();
+					if (newVal.intValue() == 0) {
+						outputChoiceBox2.setItems(FXCollections.observableArrayList("所有商品", "生产的商品", "购入的商品"));
+						outputChoiceBox2.getSelectionModel().selectedIndexProperty().addListener(
+								(ObservableValue<? extends Number> ov1, Number oldVal1, Number newVal1) -> {
+									Container.type2 = newVal1.intValue();
+								});
+						outputFileName.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-库存记录");
+						Container.outFileName = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-库存记录";
+
+					} else if (newVal.intValue() == 1) {
+						outputChoiceBox2.setItems(
+								FXCollections.observableArrayList("所有记录", "销售出库记录", "花销记录", "生产入库记录", "修改商品价格记录 "));
+						outputChoiceBox2.getSelectionModel().selectedIndexProperty().addListener(
+								(ObservableValue<? extends Number> ov1, Number oldVal1, Number newVal1) -> {
+									Container.type2 = newVal1.intValue();
+								});
+						outputFileName.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-账务记录");
+						Container.outFileName = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-账务记录";
+					}
+				});
+	}
+
+	@FXML
+	void outPositionButtonOnMouseClicked(MouseEvent e) throws Exception {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("选择导出文件位置");
+		fileChooser.setInitialFileName(Container.outFileName + ".csv");
+		File position = fileChooser.showSaveDialog(Container.stage);
+		if (position != null) {
+			String originalDir = position.toString();
+			String dir = position.toString().replaceAll("\\\\", "%5C");
+			System.out.println(dir);
+			String responseBody = null;
+			if (Container.type1 == 0) {
+
+				responseBody = Http.getConnect(
+						"http://localhost:8080/storage/goods/output?type=" + Container.type2 + "&fileAddr=" + dir,
+						Container.token);
+
+				if (Http.CODE == 200) {
+					fileTip.setVisible(true);
+					filePosition.setVisible(true);
+					filePosition.setText(originalDir);
+				} else {
+
+				}
+			} else if (Container.type1 == 1) {
+				responseBody = Http.getConnect(
+						"http://localhost:8080/storage/record/output?type=" + Container.type2 + "&fileAddr=" + dir,
+						Container.token);
+
+				if (Http.CODE == 200) {
+					fileTip.setVisible(true);
+					filePosition.setVisible(true);
+					filePosition.setText(originalDir);
+				} else {
+
+				}
+			}
+
+		}
+	}
+
+	@FXML
+	void searchProfitButtonOnMouseClicked(MouseEvent me) throws Exception {
+		String s_time = startTime.getValue().toString();
+		String e_time = endTime.getValue().toString();
+		String responseBody = null;
+
+		responseBody = Http.getConnect(
+				"http://localhost:8080/storage/record/profit?s_time=" + s_time + "&e_time=" + e_time, Container.token);
+
+		if (Http.CODE == 200) {
+			ProfitVo gv = new Gson().fromJson(responseBody, ProfitVo.class);
+			inCome.setText(gv.getEarn() + "");
+			outCome.setText(gv.getCost() + "");
+			in_outCome.setText((gv.getEarn() - gv.getCost()) + "");
+		} else {
+
+		}
+
+	}
+
+	@FXML
+	void listProfitsButtononMouseClicked(MouseEvent me) {
 		addView.setVisible(false);
 		listView.setVisible(false);
 		profitView.setVisible(true);
+		exceldataView.setVisible(false);
 	}
+
 	@FXML
 	void inoutButtononMouseClicked() throws Exception {
 		Container.dataController = this;
@@ -214,6 +531,7 @@ public class DataController {
 						profitView.setVisible(false);
 						goodsTable.setVisible(true);
 						recordsTable.setVisible(false);
+						exceldataView.setVisible(false);
 					} else {
 						// 失败
 						// message.setText((String) new
@@ -229,7 +547,7 @@ public class DataController {
 	void listRecordsButtonOnMouseClicked(Event event) throws Exception {
 		goodsChoice.setVisible(false);
 		recordsChoice.setVisible(true);
-		recordsChoice.setItems(FXCollections.observableArrayList("所有类型","销售出库类型", "花销类型", "生产入库类型", "修改商品价格类型 "));
+		recordsChoice.setItems(FXCollections.observableArrayList("所有类型", "销售出库类型", "花销类型", "生产入库类型", "修改商品价格类型 "));
 		recordsChoice.getSelectionModel().selectedIndexProperty()
 				.addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
 					Container.choiceType = newVal.intValue();
@@ -273,6 +591,7 @@ public class DataController {
 						profitView.setVisible(false);
 						goodsTable.setVisible(false);
 						recordsTable.setVisible(true);
+						exceldataView.setVisible(false);
 					} else {
 						// 失败
 						// message.setText((String) new
@@ -327,6 +646,7 @@ public class DataController {
 			profitView.setVisible(false);
 			goodsTable.setVisible(false);
 			recordsTable.setVisible(true);
+			exceldataView.setVisible(false);
 		} else {
 			// 失败
 			// message.setText((String) new Gson().fromJson(responseBody,
@@ -387,6 +707,7 @@ public class DataController {
 			profitView.setVisible(false);
 			goodsTable.setVisible(true);
 			recordsTable.setVisible(false);
+			exceldataView.setVisible(false);
 		} else {
 			// 失败
 			// message.setText((String) new Gson().fromJson(responseBody,
@@ -407,6 +728,8 @@ public class DataController {
 		addView.setVisible(true);
 		addGoods.setVisible(true);
 		addRecords.setVisible(false);
+		exceldataView.setVisible(false);
+		profitView.setVisible(false);
 	}
 
 	@SuppressWarnings("unused")
@@ -468,6 +791,8 @@ public class DataController {
 		addView.setVisible(true);
 		addRecords.setVisible(true);
 		addGoods.setVisible(false);
+		exceldataView.setVisible(false);
+		profitView.setVisible(false);
 	}
 
 	@FXML

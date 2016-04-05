@@ -26,4 +26,15 @@ public class Container {
 	/*********list筛选条件***********/
 	public static int choiceType;
 	/********************/
+
+	/*********导出数据***********/
+	public static int type1;//record or goods
+	public static int type2;// 对应上面
+	public static String outFileName;
+	/********************/
+
+
+	/*********注册用户***********/
+	public static int userType;
+	/********************/
 }

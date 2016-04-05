@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -16,16 +17,29 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="505.0" prefWidth="792.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.neu.client.DataController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+	minWidth="-Infinity" prefHeight="505.0" prefWidth="792.0"
+	xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="cn.neu.client.DataController">
 	<children>
 		<Accordion prefHeight="504.0" prefWidth="158.0" scaleShape="false">
 			<panes>
-				<TitledPane fx:id="goodsManage" animated="false" style="-fx-border-insets: 0;" text="库存管理">
+				<TitledPane fx:id="goodsManage" animated="false"
+					style="-fx-border-insets: 0;" text="库存管理">
 					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+							prefWidth="200.0">
 							<children>
-								<Button fx:id="listGoodsButton" layoutX="3.0" layoutY="27.0" mnemonicParsing="false" onMouseClicked="#listGoodsButtonOnMouseClicked" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="查看库存" />
-								<Button fx:id="addGoodsButton" layoutX="3.0" layoutY="62.0" mnemonicParsing="false" onMouseClicked="#addGoodsButtonOnMouseClicked" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="增加商品" />
+								<Button fx:id="listGoodsButton" layoutX="3.0" layoutY="27.0"
+									mnemonicParsing="false" onMouseClicked="#listGoodsButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="查看库存" />
+								<Button fx:id="addGoodsButton" layoutX="3.0" layoutY="62.0"
+									mnemonicParsing="false" onMouseClicked="#addGoodsButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="增加商品" />
 							</children>
 						</AnchorPane>
 					</content>
@@ -35,32 +49,65 @@
 				</TitledPane>
 				<TitledPane fx:id="recordManage" animated="false" text="账务管理">
 					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+							prefWidth="200.0">
 							<children>
-								<Button fx:id="listRecordsButton" layoutX="3.0" layoutY="25.0" mnemonicParsing="false" onMouseClicked="#listRecordsButtonOnMouseClicked" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="查看账务记录" />
-								<Button fx:id="addRecordsButton" layoutX="3.0" layoutY="65.0" mnemonicParsing="false" onMouseClicked="#addRecordsButtonOnMouseClicked" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="新增记录" />
-								<Button fx:id="listProfitsButton" layoutX="3.0" layoutY="107.0" mnemonicParsing="false" onMouseClicked="#listProfitsButtononMouseClicked" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="盈亏统计" />
+								<Button fx:id="listRecordsButton" layoutX="3.0" layoutY="25.0"
+									mnemonicParsing="false" onMouseClicked="#listRecordsButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="查看账务记录" />
+								<Button fx:id="addRecordsButton" layoutX="3.0" layoutY="65.0"
+									mnemonicParsing="false" onMouseClicked="#addRecordsButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="新增记录" />
+								<Button fx:id="listProfitsButton" layoutX="3.0" layoutY="107.0"
+									mnemonicParsing="false" onMouseClicked="#listProfitsButtononMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="盈亏统计" />
 							</children>
 						</AnchorPane>
 					</content>
 				</TitledPane>
 				<TitledPane fx:id="dataManage" animated="false" text="数据管理">
 					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+							prefWidth="200.0">
 							<children>
-								<Button fx:id="inputDataButton" layoutX="3.0" layoutY="27.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="导入数据" />
-								<Button fx:id="outputDataButton" layoutX="3.0" layoutY="73.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="导出数据" />
+								<Button fx:id="inputDataButton" layoutX="3.0" layoutY="27.0"
+									mnemonicParsing="false" prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="导入数据" />
+								<Button fx:id="outputDataButton" layoutX="3.0" layoutY="73.0"
+									mnemonicParsing="false" onMouseClicked="#outputDataButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="导出数据" />
 							</children>
 						</AnchorPane>
 					</content>
 				</TitledPane>
 				<TitledPane fx:id="userManage" animated="false" text="用户管理">
 					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="416.0" prefWidth="156.0">
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="416.0"
+							prefWidth="156.0">
 							<children>
-								<Button fx:id="changePassButton" layoutX="3.0" layoutY="30.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="修改密码" />
-								<Button fx:id="registerUserButton" layoutX="3.0" layoutY="68.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="注册新用户" />
-								<Button fx:id="logoutButton" layoutX="3.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;" text="退出系统" />
+								<Button fx:id="changePassButton" layoutX="3.0" layoutY="30.0"
+									mnemonicParsing="false" onMouseClicked="#changePassButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="修改密码" />
+								<Button fx:id="registerUserButton" layoutX="3.0" layoutY="68.0"
+									mnemonicParsing="false" onMouseClicked="#registerButtonOnMouseClicked"
+									prefHeight="23.0" prefWidth="150.0"
+									style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="注册新用户" />
+								<Button fx:id="logoutButton" layoutX="3.0" layoutY="105.0"
+									mnemonicParsing="false" onMouseClicked="#logout" prefHeight="23.0"
+									prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-insets: 0;"
+									text="退出系统" />
 							</children>
 						</AnchorPane>
 					</content>
@@ -70,13 +117,23 @@
 				<Cursor fx:constant="DEFAULT" />
 			</cursor>
 		</Accordion>
-		<Pane fx:id="listView" layoutX="158.0" prefHeight="505.0" prefWidth="634.0" visible="false">
-			<Button fx:id="inoutButton" layoutX="322.0" mnemonicParsing="false" onMouseClicked="#inoutButtononMouseClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-radius: 0;" text="入库/出库" />
-			<Button layoutX="427.0" mnemonicParsing="false" onMouseClicked="#changePriceButtononMouseClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-radius: 0;" text="修改价格" />
-			<ChoiceBox fx:id="goodsChoice" layoutX="94.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" />
+		<Pane fx:id="listView" layoutX="158.0" prefHeight="505.0"
+			prefWidth="634.0" visible="false">
+			<Button fx:id="inoutButton" layoutX="322.0" mnemonicParsing="false"
+				onMouseClicked="#inoutButtononMouseClicked" prefHeight="25.0"
+				prefWidth="80.0" style="-fx-background-radius: 0;" text="入库/出库" />
+			<Button layoutX="427.0" mnemonicParsing="false"
+				onMouseClicked="#changePriceButtononMouseClicked" prefHeight="25.0"
+				prefWidth="80.0" style="-fx-background-radius: 0;" text="修改价格" />
+			<ChoiceBox fx:id="goodsChoice" layoutX="94.0" prefWidth="150.0"
+				style="-fx-background-radius: 0; -fx-background-color: #fff;" />
 
-			<ChoiceBox fx:id="recordsChoice" layoutX="94.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" visible="false" />
-			<TableView fx:id="goodsTable" editable="true" layoutY="24.0" onMouseClicked="#goodsRowOnMouseClicked" prefHeight="412.0" prefWidth="634.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 0;">
+			<ChoiceBox fx:id="recordsChoice" layoutX="94.0" prefWidth="150.0"
+				style="-fx-background-radius: 0; -fx-background-color: #fff;"
+				visible="false" />
+			<TableView fx:id="goodsTable" editable="true" layoutY="24.0"
+				onMouseClicked="#goodsRowOnMouseClicked" prefHeight="412.0"
+				prefWidth="634.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 0;">
 				<columns>
 					<TableColumn prefWidth="87.0" text="商品编号" />
 					<TableColumn prefWidth="77.0" text="名称" />
@@ -85,7 +142,9 @@
 					<TableColumn prefWidth="190.0" text="类型" />
 				</columns>
 			</TableView>
-			<TableView fx:id="recordsTable" editable="true" layoutY="25.0" prefHeight="412.0" prefWidth="634.0" style="-fx-background-color: #f4f4f4;" visible="false">
+			<TableView fx:id="recordsTable" editable="true" layoutY="25.0"
+				prefHeight="412.0" prefWidth="634.0" style="-fx-background-color: #f4f4f4;"
+				visible="false">
 				<columns>
 					<TableColumn text="记录编号" />
 					<TableColumn text="记录类型" />
@@ -97,72 +156,115 @@
 				</columns>
 			</TableView>
 
-			<Text layoutX="16.0" layoutY="17.0" strokeType="OUTSIDE" strokeWidth="0.0" text="筛选条件 :" />
-			<Pagination fx:id="pagination" layoutX="217.0" layoutY="437.0" prefHeight="54.0" prefWidth="200.0" />
+			<Text layoutX="16.0" layoutY="17.0" strokeType="OUTSIDE"
+				strokeWidth="0.0" text="筛选条件 :" />
+			<Pagination fx:id="pagination" layoutX="217.0" layoutY="437.0"
+				prefHeight="54.0" prefWidth="200.0" />
 		</Pane>
-		<Pane fx:id="addView" layoutX="158.0" prefHeight="505.0" prefWidth="634.0">
+		<Pane fx:id="addView" layoutX="158.0" prefHeight="505.0"
+			prefWidth="634.0" visible="false">
 			<children>
-				<Pane fx:id="addGoods" prefHeight="505.0" prefWidth="634.0" visible="false">
-					<Text layoutX="196.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="商品名称 : ">
+				<Pane fx:id="addGoods" prefHeight="505.0" prefWidth="634.0"
+					visible="false">
+					<Text layoutX="196.0" layoutY="123.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="商品名称 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<Text layoutX="196.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" text="商品类型 : ">
+					<Text layoutX="196.0" layoutY="166.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="商品类型 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<Text layoutX="196.0" layoutY="207.0" strokeType="OUTSIDE" strokeWidth="0.0" text="商品数量 : ">
+					<Text layoutX="196.0" layoutY="207.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="商品数量 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<Text layoutX="196.0" layoutY="247.0" strokeType="OUTSIDE" strokeWidth="0.0" text="商品价格 : ">
+					<Text layoutX="196.0" layoutY="247.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="商品价格 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<TextField fx:id="addGoodsName" layoutX="264.0" layoutY="107.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" text="sdf">
+					<TextField fx:id="addGoodsName" layoutX="264.0" layoutY="107.0"
+						prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;"
+						text="sdf">
 						<opaqueInsets>
 							<Insets />
 						</opaqueInsets>
 					</TextField>
-					<ChoiceBox fx:id="addGoodsType" layoutX="264.0" layoutY="149.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;">
+					<ChoiceBox fx:id="addGoodsType" layoutX="264.0" layoutY="149.0"
+						prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;">
 
 					</ChoiceBox>
-					<TextField fx:id="addGoodsCount" layoutX="264.0" layoutY="190.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" />
-					<TextField fx:id="addGoodsPrice" layoutX="264.0" layoutY="230.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" />
-					<Button fx:id="ConfirmAddGoodsButton" layoutX="169.0" layoutY="326.0" mnemonicParsing="false" onMouseClicked="#ConfirmAddGoodsButtonOnMouseClicked" prefHeight="36.0" prefWidth="79.0" style="-fx-background-radius: 0;" text="确定" />
-					<Button fx:id="CancelAddGoodsButton" layoutX="386.0" layoutY="326.0" mnemonicParsing="false" onMouseClicked="#CancelAddGoodsButtonOnMouseClicked" prefHeight="36.0" prefWidth="79.0" style="-fx-background-radius: 0;" text="取消" />
+					<TextField fx:id="addGoodsCount" layoutX="264.0" layoutY="190.0"
+						prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;" />
+					<TextField fx:id="addGoodsPrice" layoutX="264.0" layoutY="230.0"
+						prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;" />
+					<Button fx:id="ConfirmAddGoodsButton" layoutX="169.0"
+						layoutY="326.0" mnemonicParsing="false"
+						onMouseClicked="#ConfirmAddGoodsButtonOnMouseClicked" prefHeight="36.0"
+						prefWidth="79.0" style="-fx-background-radius: 0;" text="确定" />
+					<Button fx:id="CancelAddGoodsButton" layoutX="386.0"
+						layoutY="326.0" mnemonicParsing="false"
+						onMouseClicked="#CancelAddGoodsButtonOnMouseClicked" prefHeight="36.0"
+						prefWidth="79.0" style="-fx-background-radius: 0;" text="取消" />
 				</Pane>
 
-				<Pane fx:id="addRecords" prefHeight="505.0" prefWidth="634.0" visible="false">
-					<Text layoutX="203.0" layoutY="172.0" strokeType="OUTSIDE" strokeWidth="0.0" text="记录备注 : ">
+				<Pane fx:id="addRecords" prefHeight="505.0" prefWidth="634.0"
+					visible="false">
+					<Text layoutX="203.0" layoutY="172.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="记录备注 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<Text layoutX="203.0" layoutY="226.0" strokeType="OUTSIDE" strokeWidth="0.0" text="记录类型 : ">
+					<Text layoutX="203.0" layoutY="226.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="记录类型 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<Text layoutX="203.0" layoutY="276.0" strokeType="OUTSIDE" strokeWidth="0.0" text="涉及金额 : ">
+					<Text layoutX="203.0" layoutY="276.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="涉及金额 : ">
 						<font>
 							<Font size="14.0" />
 						</font>
 					</Text>
-					<TextField fx:id="addRecordsComment" layoutX="271.0" layoutY="156.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;">
+					<TextField fx:id="addRecordsComment" layoutX="271.0"
+						layoutY="156.0" prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;">
 						<opaqueInsets>
 							<Insets />
 						</opaqueInsets>
 					</TextField>
-					<TextField editable="false" layoutX="271.0" layoutY="209.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" text="其他花销" />
-					<TextField fx:id="addRecordsPrice" layoutX="271.0" layoutY="259.0" prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0; -fx-background-color: #fff;" />
-					<Button fx:id="ConfirmAddRecordsButton" layoutX="169.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#ConfirmAddRecordsButtonOnMouseClicked" prefHeight="36.0" prefWidth="79.0" style="-fx-background-radius: 0;" text="确定" />
-					<Button fx:id="CancelAddRecordsButton" layoutX="386.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#CancelAddRecordsButtonOnMouseClicked" prefHeight="36.0" prefWidth="79.0" style="-fx-background-radius: 0;" text="取消" />
-					<Text fill="#f21616" layoutX="92.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="注: 在此只能增加除 出库 入库 采购 之外类型的账务记录" wrappingWidth="450.240234375">
+					<TextField editable="false" layoutX="271.0" layoutY="209.0"
+						prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;"
+						text="其他花销" />
+					<TextField fx:id="addRecordsPrice" layoutX="271.0"
+						layoutY="259.0" prefHeight="23.0" prefWidth="161.0"
+						style="-fx-background-radius: 0; -fx-background-color: #fff;" />
+					<Button fx:id="ConfirmAddRecordsButton" layoutX="169.0"
+						layoutY="348.0" mnemonicParsing="false"
+						onMouseClicked="#ConfirmAddRecordsButtonOnMouseClicked"
+						prefHeight="36.0" prefWidth="79.0" style="-fx-background-radius: 0;"
+						text="确定" />
+					<Button fx:id="CancelAddRecordsButton" layoutX="386.0"
+						layoutY="348.0" mnemonicParsing="false"
+						onMouseClicked="#CancelAddRecordsButtonOnMouseClicked" prefHeight="36.0"
+						prefWidth="79.0" style="-fx-background-radius: 0;" text="取消" />
+					<Text fill="#f21616" layoutX="92.0" layoutY="66.0" strokeType="OUTSIDE"
+						strokeWidth="0.0" text="注: 在此只能增加除 出库 入库 采购 之外类型的账务记录"
+						wrappingWidth="450.240234375">
 						<font>
 							<Font size="18.0" />
 						</font>
@@ -170,32 +272,261 @@
 				</Pane>
 			</children>
 		</Pane>
-		<Pane fx:id="profitView" visible="false" layoutX="158.0" prefHeight="505.0" prefWidth="634.0">
-         <children>
-            <TextField disable="true" layoutX="286.0" layoutY="89.0" prefHeight="23.0" prefWidth="68.0" />
-            <Text layoutX="224.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="收入 :">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Text>
-            <Text layoutX="125.0" layoutY="289.0" strokeType="OUTSIDE" strokeWidth="0.0" text="开始时间 :" />
-            <DatePicker fx:id="startTime" layoutX="199.0" layoutY="273.0" style="-fx-background-radius: 0;" />
-            <Text layoutX="125.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0" text="截止时间 :" />
-            <DatePicker fx:id="endTime" layoutX="199.0" layoutY="306.0" style="-fx-background-radius: 0;" />
-            <Button onMouseClicked="#searchProfitButtonOnMouseClicked" layoutX="418.0" layoutY="273.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="98.0" style="-fx-background-radius: 0;" text="查询" />
-            <TextField disable="true" layoutX="286.0" layoutY="128.0" prefHeight="23.0" prefWidth="68.0" />
-            <Text layoutX="223.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" text="花销 :">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Text>
-            <TextField disable="true" layoutX="286.0" layoutY="172.0" prefHeight="23.0" prefWidth="68.0" />
-            <Text layoutX="223.0" layoutY="189.0" strokeType="OUTSIDE" strokeWidth="0.0" text="净利润 :">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Text>
-         </children>
-      </Pane>
+		<Pane fx:id="profitView" layoutX="158.0" prefHeight="505.0"
+			prefWidth="634.0" visible="false">
+			<children>
+				<TextField fx:id="inCome" disable="true" layoutX="286.0"
+					layoutY="89.0" prefHeight="23.0" prefWidth="79.0" />
+				<Text layoutX="224.0" layoutY="106.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="收入 :">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Text>
+				<Text layoutX="125.0" layoutY="289.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="开始时间 :" />
+				<DatePicker fx:id="startTime" layoutX="199.0" layoutY="273.0"
+					style="-fx-background-radius: 0;" />
+				<Text layoutX="125.0" layoutY="322.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="截止时间 :" />
+				<DatePicker fx:id="endTime" layoutX="199.0" layoutY="306.0"
+					style="-fx-background-radius: 0;" />
+				<Button layoutX="418.0" layoutY="273.0" mnemonicParsing="false"
+					onMouseClicked="#searchProfitButtonOnMouseClicked" prefHeight="56.0"
+					prefWidth="98.0" style="-fx-background-radius: 0;" text="查询" />
+				<TextField fx:id="outCome" disable="true" layoutX="286.0"
+					layoutY="128.0" prefHeight="23.0" prefWidth="79.0" />
+				<Text layoutX="223.0" layoutY="145.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="花销 :">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Text>
+				<TextField fx:id="in_outCome" disable="true" layoutX="286.0"
+					layoutY="172.0" prefHeight="23.0" prefWidth="80.0" />
+				<Text layoutX="223.0" layoutY="189.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="净利润 :">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Text>
+				<Text layoutX="372.0" layoutY="106.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="元">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Text>
+				<Text layoutX="372.0" layoutY="145.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="元">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Text>
+				<Text layoutX="372.0" layoutY="190.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="元">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Text>
+			</children>
+		</Pane>
+		<Pane fx:id="exceldataView" layoutX="158.0" prefHeight="505.0"
+			prefWidth="634.0" visible="false">
+			<children>
+				<Text layoutX="195.0" layoutY="151.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="导出的数据 :" wrappingWidth="98.00000488758087">
+					<font>
+						<Font size="14.0" />
+					</font>
+				</Text>
+				<Text layoutX="195.0" layoutY="186.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="数据类型 :" wrappingWidth="78.99999891221523">
+					<font>
+						<Font size="14.0" />
+					</font>
+				</Text>
+				<ChoiceBox fx:id="outputChoiceBox1" layoutX="290.0"
+					layoutY="134.0" prefWidth="150.0" style="-fx-background-radius: 0;" />
+				<ChoiceBox fx:id="outputChoiceBox2" layoutX="290.0"
+					layoutY="169.0" prefWidth="150.0" style="-fx-background-radius: 0;" />
+				<Text layoutX="195.0" layoutY="221.0" strokeType="OUTSIDE"
+					strokeWidth="0.0" text="导出文件名 :" wrappingWidth="78.99999891221523">
+					<font>
+						<Font size="14.0" />
+					</font>
+				</Text>
+				<TextField fx:id="outputFileName" layoutX="290.0" layoutY="204.0"
+					prefHeight="23.0" prefWidth="150.0" style="-fx-background-radius: 0;" />
+				<Button layoutX="285.0" layoutY="253.0" mnemonicParsing="false"
+					onMouseClicked="#outPositionButtonOnMouseClicked" style="-fx-background-radius: 0;"
+					text="导出文件" />
+				<Text fx:id="fileTip" layoutX="211.0" layoutY="336.0"
+					strokeType="OUTSIDE" strokeWidth="0.0" text="导出数据成功,文件位置为 :">
+					<font>
+						<Font size="18.0" />
+					</font>
+				</Text>
+				<Text fx:id="filePosition" layoutX="107.0" layoutY="386.0"
+					strokeType="OUTSIDE" strokeWidth="0.0" text="位置" wrappingWidth="484.0">
+					<font>
+						<Font size="14.0" />
+					</font>
+				</Text>
+			</children>
+		</Pane>
+		<Pane fx:id="userManageView" layoutX="158.0" prefHeight="505.0"
+			prefWidth="634.0" visible="false">
+			<children>
+				<Pane fx:id="changePassPane" prefHeight="505.0" prefWidth="634.0"
+					visible="false">
+					<children>
+						<Text layoutX="169.0" layoutY="133.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="原密码 :" wrappingWidth="98.00000488758087">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<Text layoutX="169.0" layoutY="176.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="新密码 :" wrappingWidth="78.99999891221523">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<Text layoutX="169.0" layoutY="219.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="再次输入新密码 :" wrappingWidth="113.99999891221523">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<PasswordField fx:id="oldPass" layoutX="283.0"
+							layoutY="116.0" style="-fx-background-radius: 0;" />
+						<PasswordField fx:id="newPass" layoutX="283.0"
+							layoutY="159.0" style="-fx-background-radius: 0;" />
+						<PasswordField fx:id="newPass2" layoutX="283.0"
+							layoutY="202.0" style="-fx-background-radius: 0;" />
+						<Button layoutX="209.0" layoutY="341.0" mnemonicParsing="false"
+							onMouseClicked="#confirmChangePassButtonOnMouseClicked"
+							prefHeight="25.0" prefWidth="57.0" style="-fx-background-radius: 0;"
+							text="修改" />
+						<Button layoutX="373.0" layoutY="341.0" mnemonicParsing="false"
+							onMouseClicked="#cancelPassButtonOnMouseClicked" prefHeight="25.0"
+							prefWidth="57.0" style="-fx-background-radius: 0;" text="取消" />
+						<Text fx:id="changePassTip" fill="#ff6666" fontSmoothingType="LCD"
+							layoutX="177.0" layoutY="291.0" strokeType="OUTSIDE" strokeWidth="0.0"
+							text="密码强度太弱" textAlignment="CENTER" wrappingWidth="279.0000048875809">
+							<font>
+								<Font size="18.0" />
+							</font>
+						</Text>
+						<Text fx:id="oldPassTip" fill="#ff6666" layoutX="456.0"
+							layoutY="132.0" strokeType="OUTSIDE" strokeWidth="0.0" text="原密码 "
+							wrappingWidth="98.00000488758087" />
+						<Text fx:id="newPassTip" fill="#ff6666" layoutX="456.0"
+							layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" text="新密码 "
+							wrappingWidth="98.00000488758087" />
+						<Text fx:id="newPassTip2" fill="#ff6666" layoutX="456.0"
+							layoutY="218.0" strokeType="OUTSIDE" strokeWidth="0.0" text="新密码2"
+							wrappingWidth="98.00000488758087" />
+					</children>
+				</Pane>
+				<Pane fx:id="registerPane" prefHeight="505.0" prefWidth="634.0"
+					visible="false">
+					<children>
+						<Text layoutX="195.0" layoutY="123.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="用户名 :">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<TextField fx:id="rUserName" layoutX="260.0" layoutY="106.0"
+							style="-fx-background-radius: 0;" />
+						<Text layoutX="194.0" layoutY="162.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="密码 :" wrappingWidth="54.43945634365082">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<PasswordField fx:id="rPassword" layoutX="260.0"
+							layoutY="145.0" style="-fx-background-radius: 0;" />
+						<Text layoutX="194.0" layoutY="201.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="类型 :">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<ChoiceBox fx:id="rUserType" layoutX="260.0" layoutY="184.0"
+							prefHeight="23.0" prefWidth="161.0" style="-fx-background-radius: 0;" />
+						<Text layoutX="194.0" layoutY="240.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="邮箱 :">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<TextField fx:id="rEmail" layoutX="260.0" layoutY="223.0"
+							style="-fx-background-radius: 0;" />
+						<Text layoutX="194.0" layoutY="277.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="手机 :">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<TextField fx:id="rPhone" layoutX="260.0" layoutY="260.0"
+							style="-fx-background-radius: 0;" />
+						<Text layoutX="433.0" layoutY="125.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="*">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<Text layoutX="433.0" layoutY="164.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="*">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<Text layoutX="432.0" layoutY="201.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="*">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<Text layoutX="432.0" layoutY="241.0" strokeType="OUTSIDE"
+							strokeWidth="0.0" text="*">
+							<font>
+								<Font size="14.0" />
+							</font>
+						</Text>
+						<Text fx:id="rUserNameTip" fill="#ff6666" layoutX="453.0"
+							layoutY="122.0" strokeType="OUTSIDE" strokeWidth="0.0" text="用户名"
+							wrappingWidth="137.240234375" />
+						<Text fx:id="rPasswordTip" fill="#ff6666" layoutX="453.0"
+							layoutY="161.0" strokeType="OUTSIDE" strokeWidth="0.0" text="密码"
+							wrappingWidth="137.240234375" />
+						<Text fx:id="rTypeTip" fill="#ff6666" layoutX="452.0"
+							layoutY="199.0" strokeType="OUTSIDE" strokeWidth="0.0" text="类型"
+							wrappingWidth="137.240234375" />
+						<Text fx:id="rEmailTip" fill="#ff6666" layoutX="452.0"
+							layoutY="239.0" strokeType="OUTSIDE" strokeWidth="0.0" text="邮箱"
+							wrappingWidth="137.240234375" />
+						<Text fx:id="rPhoneTip" fill="#ff6666" layoutX="451.0"
+							layoutY="275.0" strokeType="OUTSIDE" strokeWidth="0.0" text="手机号"
+							wrappingWidth="137.240234375" />
+						<Text fx:id="rRegTip" fill="#ff6666" layoutX="248.0" layoutY="319.0"
+							strokeType="OUTSIDE" strokeWidth="0.0" text="注册成功" textAlignment="CENTER"
+							wrappingWidth="137.240234375">
+							<font>
+								<Font size="18.0" />
+							</font>
+						</Text>
+						<Button layoutX="213.0" layoutY="370.0" mnemonicParsing="false"
+							onMouseClicked="#confirmRegisterButtonOnMouseClicked" prefHeight="25.0"
+							prefWidth="57.0" style="-fx-background-radius: 0;" text="注册" />
+						<Button layoutX="365.0" layoutY="370.0" mnemonicParsing="false"
+							onMouseClicked="#cancelRegisterButtonOnMouseClicked" prefHeight="25.0"
+							prefWidth="57.0" style="-fx-background-radius: 0;" text="取消" />
+					</children>
+				</Pane>
+			</children>
+		</Pane>
 	</children>
 </Pane>
