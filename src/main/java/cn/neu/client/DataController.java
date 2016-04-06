@@ -4,9 +4,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-
-import org.apache.http.HttpStatus;
-
 import com.google.gson.Gson;
 import cn.neu.global.Container;
 import cn.neu.http.Http;
@@ -41,6 +38,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -143,6 +141,12 @@ public class DataController {
 	private Text filePosition;
 	@FXML
 	private Text fileTip;
+	@FXML
+	private Pane outDataView;
+	@FXML
+	private Pane inDataView;
+	@FXML
+	private Text inDataTip;
 
 	@FXML
 	private Pane userManageView;
@@ -189,8 +193,77 @@ public class DataController {
 	private ChoiceBox rUserType;
 	@FXML
 	private Text rTypeTip;
+
+	@FXML
+	void chooseRecordDataFileButtonOnMouseClicked() throws Exception {
+		inDataTip.setVisible(false);
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("选择.csv数据文件");
+		File position = fileChooser.showOpenDialog(Container.stage);
+		if (position != null) {
+			String originalDir = position.toString();
+			String dir = position.toString().replaceAll("\\\\", "%5C");
+			if (!dir.endsWith(".csv")) {
+				inDataTip.setText("请选择.csv格式的文件");
+				inDataTip.fillProperty().set(Paint.valueOf("#ff6666"));
+				inDataTip.setVisible(true);
+			}
+			String responseBody = null;
+			responseBody = Http.getConnect("http://localhost:8080/storage/record/input?fileAddr=" + dir,
+					Container.token);
+
+			if (Http.CODE == 200) {
+				inDataTip.setVisible(true);
+				inDataTip.setText("账务记录导入成功");
+				inDataTip.fillProperty().set(Paint.valueOf("#000000"));
+			} else {
+				inDataTip.setVisible(true);
+				inDataTip.setText("账务记录导入失败");
+				inDataTip.fillProperty().set(Paint.valueOf("#ff6666"));
+			}
+		}
+	}
+
+	// copy from other method not modify
+	@FXML
+	void chooseGoodsDataFileButtonOnMouseClicked() throws Exception {
+		inDataTip.setVisible(false);
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("选择.csv数据文件");
+		File position = fileChooser.showOpenDialog(Container.stage);
+		if (position != null) {
+			String originalDir = position.toString();
+			String dir = position.toString().replaceAll("\\\\", "%5C");
+			if (!dir.endsWith(".csv")) {
+				inDataTip.setText("请选择.csv格式的文件");
+				inDataTip.fillProperty().set(Paint.valueOf("#ff6666"));
+				inDataTip.setVisible(true);
+			}
+			String responseBody = null;
+			responseBody = Http.getConnect("http://localhost:8080/storage/goods/input?fileAddr=" + dir,
+					Container.token);
+
+			if (Http.CODE == 200) {
+				inDataTip.setVisible(true);
+				inDataTip.setText("库存数据导入成功");
+				inDataTip.fillProperty().set(Paint.valueOf("#000000"));
+			} else {
+				inDataTip.setVisible(true);
+				inDataTip.setText("库存数据导入失败");
+				inDataTip.fillProperty().set(Paint.valueOf("#ff6666"));
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	@FXML
 	void confirmRegisterButtonOnMouseClicked() throws Exception {
+		rUserNameTip.setVisible(false);
+		rPasswordTip.setVisible(false);
+		rEmailTip.setVisible(false);
+		rPhoneTip.setVisible(false);
+		rRegTip.setVisible(false);
+		rTypeTip.setVisible(false);
 		String rname = rUserName.getText();
 		String rpass = CipherUtil.generatePassword(rPassword.getText());
 		String remail = rEmail.getText();
@@ -200,15 +273,15 @@ public class DataController {
 		user.setPassword(rpass);
 		user.setEmail(remail);
 		user.setPhone(rphone);
-		user.setPermission(Container.userType+2);
+		user.setPermission(Container.userType + 2);
 		String responseBody = null;
 		responseBody = Http.postConnect("http://localhost:8080/storage/user/register", Container.token,
 				new Gson().toJson(user));
 
-		if(Http.CODE == 200){
+		if (Http.CODE == 200) {
 			rRegTip.setText("注册成功");
 			rRegTip.setVisible(true);
-		} else if(Http.CODE ==400){
+		} else if (Http.CODE == 400) {
 			Map<String, Object> map = new Gson().fromJson(responseBody, Map.class);
 			String pos = (String) map.get("pos");
 			if (pos.equals("1")) {
@@ -220,10 +293,10 @@ public class DataController {
 			} else if (pos.equals("3")) {
 				rTypeTip.setText((String) map.get("msg"));
 				rTypeTip.setVisible(true);
-			}else if (pos.equals("4")) {
+			} else if (pos.equals("4")) {
 				rEmailTip.setText((String) map.get("msg"));
 				rEmailTip.setVisible(true);
-			}else if (pos.equals("5")) {
+			} else if (pos.equals("5")) {
 				rPhoneTip.setText((String) map.get("msg"));
 				rPhoneTip.setVisible(true);
 			}
@@ -235,6 +308,7 @@ public class DataController {
 		userManageView.setVisible(false);
 	}
 
+	@SuppressWarnings("unchecked")
 	@FXML
 	void registerButtonOnMouseClicked() {
 		exceldataView.setVisible(false);
@@ -255,9 +329,9 @@ public class DataController {
 		rEmail.clear();
 		rPhone.clear();
 
-		rUserType.setItems(FXCollections.observableArrayList("管理员(可读可写)","普通用户(只读)"));
-		rUserType.getSelectionModel().selectedIndexProperty().addListener(
-				(ObservableValue<? extends Number> ov1, Number oldVal, Number newVal) -> {
+		rUserType.setItems(FXCollections.observableArrayList("管理员(可读可写)", "普通用户(只读)"));
+		rUserType.getSelectionModel().selectedIndexProperty()
+				.addListener((ObservableValue<? extends Number> ov1, Number oldVal, Number newVal) -> {
 					System.out.println(newVal.intValue());
 					Container.userType = newVal.intValue();
 				});
@@ -268,6 +342,7 @@ public class DataController {
 	 *
 	 * @throws Exception
 	 ***********************/
+	@SuppressWarnings("unchecked")
 	@FXML
 	void confirmChangePassButtonOnMouseClicked() throws Exception {
 		String oldPas = oldPass.getText();
@@ -332,14 +407,31 @@ public class DataController {
 
 	/*************** change pass ***************/
 
-	@SuppressWarnings("unchecked")
 	@FXML
-	void outputDataButtonOnMouseClicked(MouseEvent me) {
+	void inputDataButtonOnMouseClicked(MouseEvent me) {
+		inDataTip.setVisible(false);
 		exceldataView.setVisible(true);
+		inDataView.setVisible(true);
+		outDataView.setVisible(false);
 		filePosition.setVisible(false);
 		fileTip.setVisible(false);
 		addView.setVisible(false);
 		listView.setVisible(false);
+		userManageView.setVisible(false);
+		profitView.setVisible(false);
+	}
+
+	@SuppressWarnings("unchecked")
+	@FXML
+	void outputDataButtonOnMouseClicked(MouseEvent me) {
+		exceldataView.setVisible(true);
+		inDataView.setVisible(false);
+		outDataView.setVisible(true);
+		filePosition.setVisible(false);
+		fileTip.setVisible(false);
+		addView.setVisible(false);
+		listView.setVisible(false);
+		userManageView.setVisible(false);
 		profitView.setVisible(false);
 		outputChoiceBox1.setItems(FXCollections.observableArrayList("库存商品", "账务记录"));
 		outputChoiceBox1.getSelectionModel().selectedIndexProperty()
@@ -368,6 +460,7 @@ public class DataController {
 				});
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void outPositionButtonOnMouseClicked(MouseEvent e) throws Exception {
 		FileChooser fileChooser = new FileChooser();
@@ -435,6 +528,7 @@ public class DataController {
 		listView.setVisible(false);
 		profitView.setVisible(true);
 		exceldataView.setVisible(false);
+		userManageView.setVisible(false);
 	}
 
 	@FXML
@@ -487,6 +581,7 @@ public class DataController {
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@FXML
 	void listGoodsButtonOnMouseClicked(Event event) throws Exception {
 		goodsChoice.setVisible(true);
@@ -507,7 +602,6 @@ public class DataController {
 						}
 
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -532,6 +626,7 @@ public class DataController {
 						goodsTable.setVisible(true);
 						recordsTable.setVisible(false);
 						exceldataView.setVisible(false);
+						userManageView.setVisible(false);
 					} else {
 						// 失败
 						// message.setText((String) new
@@ -543,6 +638,7 @@ public class DataController {
 		pagination.setPageFactory((Integer i) -> createGoodsPage(i));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@FXML
 	void listRecordsButtonOnMouseClicked(Event event) throws Exception {
 		goodsChoice.setVisible(false);
@@ -564,7 +660,6 @@ public class DataController {
 						}
 
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					if (Http.CODE == 200) {
@@ -592,6 +687,7 @@ public class DataController {
 						goodsTable.setVisible(false);
 						recordsTable.setVisible(true);
 						exceldataView.setVisible(false);
+						userManageView.setVisible(false);
 					} else {
 						// 失败
 						// message.setText((String) new
@@ -619,7 +715,6 @@ public class DataController {
 			}
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (Http.CODE == 200) {
@@ -647,6 +742,7 @@ public class DataController {
 			goodsTable.setVisible(false);
 			recordsTable.setVisible(true);
 			exceldataView.setVisible(false);
+			userManageView.setVisible(false);
 		} else {
 			// 失败
 			// message.setText((String) new Gson().fromJson(responseBody,
@@ -683,7 +779,6 @@ public class DataController {
 			}
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -708,6 +803,7 @@ public class DataController {
 			goodsTable.setVisible(true);
 			recordsTable.setVisible(false);
 			exceldataView.setVisible(false);
+			userManageView.setVisible(false);
 		} else {
 			// 失败
 			// message.setText((String) new Gson().fromJson(responseBody,
@@ -730,6 +826,7 @@ public class DataController {
 		addRecords.setVisible(false);
 		exceldataView.setVisible(false);
 		profitView.setVisible(false);
+		userManageView.setVisible(false);
 	}
 
 	@SuppressWarnings("unused")
@@ -793,6 +890,7 @@ public class DataController {
 		addGoods.setVisible(false);
 		exceldataView.setVisible(false);
 		profitView.setVisible(false);
+		userManageView.setVisible(false);
 	}
 
 	@FXML
