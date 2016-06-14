@@ -6,8 +6,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -67,6 +69,34 @@ public class Http {
 			};
 
 			String responseBody = httpclient.execute(httppost, responseHandler);
+			return responseBody;
+		}
+	}
+
+	public static String putConnect(String url, String token, String body) throws Exception {
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+			HttpPut httpput = new HttpPut(url);
+			httpput.addHeader("Content-Type", "application/json");
+			if (null != token && !token.trim().equals("")) {
+				httpput.addHeader("HTTP_TOKEN", token);
+			}
+			StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
+			httpput.setEntity(stringEntity);
+			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+				@Override
+				public String handleResponse(final HttpResponse response) throws IOException {
+					CODE = response.getStatusLine().getStatusCode();
+					HttpEntity entity = response.getEntity();
+					try {
+						return entity != null ? EntityUtils.toString(entity) : null;
+					} catch (ParseException ex) {
+						throw new ClientProtocolException(ex);
+					}
+				}
+
+			};
+
+			String responseBody = httpclient.execute(httpput, responseHandler);
 			return responseBody;
 		}
 	}

@@ -1,16 +1,27 @@
 package cn.neu.client;
 
 import java.io.File;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import cn.neu.global.Container;
 import cn.neu.http.Http;
 import cn.neu.recv.ChgPwdDto;
+import cn.neu.recv.GType;
 import cn.neu.recv.Goods;
 import cn.neu.recv.GoodsVo;
 import cn.neu.recv.ProfitVo;
+import cn.neu.recv.RType;
 import cn.neu.recv.Record;
 import cn.neu.recv.RecordVo;
 import cn.neu.recv.User;
@@ -21,7 +32,9 @@ import cn.neu.vo.JXGoodsVo;
 import cn.neu.vo.JXRecordsVo;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -29,13 +42,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ListView.EditEvent;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
@@ -109,6 +126,8 @@ public class DataController {
 	private Pagination pagination;
 	@FXML
 	private Button inoutButton;
+	@FXML
+	private Button changePriceButton;
 	@SuppressWarnings("rawtypes")
 	@FXML
 	private ChoiceBox goodsChoice;
@@ -193,7 +212,422 @@ public class DataController {
 	private ChoiceBox rUserType;
 	@FXML
 	private Text rTypeTip;
+	@FXML
+	private TextField goodsKey;
+	@FXML
+	private TextField recordKey;
+	@FXML
+	private Pane typeView;
+	@FXML
+	private Pane goodsTypePane;
+	@FXML
+	private Pane recordTypePane;
+	@FXML
+	private Button goodsTypeButton;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ListView goodsTypeListView;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ListView recordTypeListView;
+	@FXML
+	private TextField goodsTypeField;
+	@FXML
+	private TextField recordTypeField;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox addRecordType;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox priceType;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox goodsTypeInChoiceBox;
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox goodsTypeOutChoiceBox;
 
+	@SuppressWarnings("unused")
+	@FXML
+	void addRecordTypeOnMouseClicked() throws Exception {
+		String t = recordTypeField.getText();
+		if (StringUtils.isBlank(t)) {
+			return;
+		}
+		RType g = new RType();
+		g.setR_name(t);
+		String responseBody = Http.postConnect("http://localhost:8080/storage/type/r_add", Container.token,
+				new Gson().toJson(g));
+		if (Http.CODE == 200) {
+			recordTypeButtonOnMouseClicked(null);
+		}
+
+	}
+
+	@FXML
+	void editGoodsTypeOnMouseClicked() throws Exception {
+		String t = goodsTypeField.getText();
+		if (StringUtils.isBlank(t)) {
+			return;
+		}
+		GType g = null;
+		for (GType gt : Container.gType) {
+			if (gt.getG_name().equals(t)) {
+				g = gt;
+			}
+		}
+		if (g == null) {
+			return;
+		}
+		int inIndex = goodsTypeInChoiceBox.getSelectionModel().getSelectedIndex();
+		int outIndex = goodsTypeOutChoiceBox.getSelectionModel().getSelectedIndex();
+		g.setG_name(t);
+		g.setWhen_in(inIndex);
+		g.setWhen_out(outIndex);
+		Http.putConnect("http://localhost:8080/storage/type/g_edit", Container.token, new Gson().toJson(g));
+		if (Http.CODE == 200) {
+			goodsTypeButtonOnMouseClicked(null);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@FXML
+	void addGoodsTypeOnMouseClicked() throws Exception {
+		String t = goodsTypeField.getText();
+		if (StringUtils.isBlank(t)) {
+			return;
+		}
+		for (GType gt : Container.gType) {
+			if (gt.getG_name().equals(t)) {
+				return;
+			}
+		}
+		int inIndex = goodsTypeInChoiceBox.getSelectionModel().getSelectedIndex();
+		int outIndex = goodsTypeOutChoiceBox.getSelectionModel().getSelectedIndex();
+		GType g = new GType();
+		g.setG_name(t);
+		g.setWhen_in(inIndex);
+		g.setWhen_out(outIndex);
+		String responseBody = Http.postConnect("http://localhost:8080/storage/type/g_add", Container.token,
+				new Gson().toJson(g));
+		if (Http.CODE == 200) {
+			goodsTypeButtonOnMouseClicked(null);
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@FXML
+	void goodsTypeButtonOnMouseClicked(Event e) throws Exception {
+		Container.oldTypeVal = null;
+		Container.newTypeVal = null;
+		Container.gType = null;
+		typeView.setVisible(true);
+		goodsTypePane.setVisible(true);
+		recordTypePane.setVisible(false);
+		goodsTypeField.clear();
+
+		/*
+		 * goodsTypeListView.setCellFactory(TextFieldListCell.forListView());
+		 * goodsTypeListView.setOnEditStart(new
+		 * EventHandler<EditEvent<String>>() {
+		 *
+		 * @Override public void handle(EditEvent<String> e) {
+		 * Container.oldTypeVal =
+		 * goodsTypeListView.getItems().get(e.getIndex()).toString();
+		 *
+		 * } }); goodsTypeListView.setOnEditCommit(new
+		 * EventHandler<EditEvent<String>>() {
+		 *
+		 * @Override public void handle(EditEvent<String> e) {
+		 * System.out.println(1); if (StringUtils.isBlank(e.getNewValue())) {
+		 * try { System.out.println(2); goodsTypeButtonOnMouseClicked(null); }
+		 * catch (Exception e1) { e1.printStackTrace(); } return; }
+		 *
+		 * if (e.getNewValue().equals(Container.oldTypeVal)) {
+		 * System.out.println(3); return; } GType g = null; for (GType gt :
+		 * Container.gType) { if (gt.getG_name().equals(Container.oldTypeVal)) {
+		 * g = gt; g.setG_name(e.getNewValue()); break; } }
+		 * System.out.println(g.toString()); // TODO try {
+		 * Http.putConnect("http://localhost:8080/storage/type/g_edit",
+		 * Container.token, new Gson().toJson(g)); if (Http.CODE == 200) {
+		 * goodsTypeButtonOnMouseClicked(null); } } catch (Exception e1) {
+		 * e1.printStackTrace(); } } });
+		 */
+		goodsTypePane.setVisible(true);
+		String responseBody = null;
+		responseBody = Http.getConnect("http://localhost:8080/storage/type/g_list", Container.token);
+		if (Http.CODE == 200) {
+
+			List<GType> gv = new Gson().fromJson(responseBody, new TypeToken<List<GType>>() {
+			}.getType());
+			Container.gType = gv;
+			List<String> gs = new ArrayList<>();
+			for (GType g : gv) {
+				gs.add(g.getG_name());
+			}
+			ObservableList<String> items = FXCollections.observableArrayList(gs);
+
+			goodsTypeListView.setItems(items);
+		}
+
+		goodsTypeListView.getSelectionModel().selectedIndexProperty()
+				.addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
+					if (newVal.intValue() < 0) {
+						return;
+					}
+					GType type = Container.gType.get(newVal.intValue());
+					int when_in = type.getWhen_in();
+					int when_out = type.getWhen_out();
+					goodsTypeField.setText(type.getG_name());
+					if (when_in == -1) {
+						goodsTypeInChoiceBox.getSelectionModel().select(2);
+					} else if (when_in == 0) {
+						goodsTypeInChoiceBox.getSelectionModel().select(0);
+					} else if (when_in == 1) {
+						goodsTypeInChoiceBox.getSelectionModel().select(1);
+					}
+					if (when_out == -1) {
+						goodsTypeOutChoiceBox.getSelectionModel().select(2);
+					} else if (when_out == 0) {
+						goodsTypeOutChoiceBox.getSelectionModel().select(0);
+					} else if (when_out == 1) {
+						goodsTypeOutChoiceBox.getSelectionModel().select(1);
+					}
+
+				});
+
+		// fill choicebox
+		goodsTypeInChoiceBox.setItems(FXCollections.observableArrayList("无", "记为收入", "记为支出"));
+		goodsTypeOutChoiceBox.setItems(FXCollections.observableArrayList("无", "记为收入", "记为支出"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@FXML
+	void recordTypeButtonOnMouseClicked(Event e) throws Exception {
+		Container.oldTypeVal = null;
+		Container.newTypeVal = null;
+		Container.rType = null;
+		typeView.setVisible(true);
+		goodsTypePane.setVisible(false);
+		recordTypePane.setVisible(true);
+		recordTypeField.clear();
+		recordTypeListView.setCellFactory(TextFieldListCell.forListView());
+		recordTypeListView.setOnEditStart(new EventHandler<EditEvent<String>>() {
+			@Override
+			public void handle(EditEvent<String> e) {
+				Container.oldTypeVal = recordTypeListView.getItems().get(e.getIndex()).toString();
+
+			}
+		});
+		recordTypeListView.setOnEditCommit(new EventHandler<EditEvent<String>>() {
+			@Override
+			public void handle(EditEvent<String> e) {
+				if (StringUtils.isBlank(e.getNewValue())) {
+					try {
+						recordTypeButtonOnMouseClicked(null);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					return;
+				}
+
+				if (e.getNewValue().equals(Container.oldTypeVal)) {
+					return;
+				}
+				RType r = null;
+				for (RType rt : Container.rType) {
+					if (rt.getR_name().equals(Container.oldTypeVal)) {
+						r = rt;
+						r.setR_name(e.getNewValue());
+						break;
+					}
+				}
+				// TODO
+				try {
+					Http.putConnect("http://localhost:8080/storage/type/r_edit", Container.token, new Gson().toJson(r));
+					if (Http.CODE == 200) {
+						recordTypeButtonOnMouseClicked(null);
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		recordTypePane.setVisible(true);
+		String responseBody = null;
+		responseBody = Http.getConnect("http://localhost:8080/storage/type/r_list", Container.token);
+		if (Http.CODE == 200) {
+
+			List<RType> rv = new Gson().fromJson(responseBody, new TypeToken<List<RType>>() {
+			}.getType());
+			Container.rType = rv;
+			List<String> rs = new ArrayList<>();
+			for (RType r : rv) {
+				rs.add(r.getR_name());
+			}
+			ObservableList<String> items = FXCollections.observableArrayList(rs);
+
+			recordTypeListView.setItems(items);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@FXML
+	void goodsKeyOnKeyReleased(Event e) throws Exception {
+		if (goodsKey.getText() == null) {
+			return;
+		}
+		Container.choiceKey = goodsKey.getText();
+		String responseBody = null;
+		try {
+			if (Container.choiceType == 0) {
+				if (goodsKey.getText() != null) {
+					responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?key=" + goodsKey.getText(),
+							Container.token);
+				} else {
+					responseBody = Http.getConnect("http://localhost:8080/storage/goods/list", Container.token);
+				}
+			} else {
+				if (goodsKey.getText() != null) {
+					responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?type="
+							+ (Container.choiceType) + "&key=" + goodsKey.getText(), Container.token);
+				} else {
+					responseBody = Http.getConnect(
+							"http://localhost:8080/storage/goods/list?type=" + Container.choiceType, Container.token);
+				}
+			}
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
+		if (Http.CODE == 200) {
+			// 成功
+			GoodsVo gv = new Gson().fromJson(responseBody, GoodsVo.class);
+
+			pagination.setPageCount(gv.getCount() % 16 == 0 ? gv.getCount() / 16 : gv.getCount() / 16 + 1);
+			((TableColumn) goodsTable.getColumns().get(0))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("id"));
+			((TableColumn) goodsTable.getColumns().get(1))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("name"));
+			((TableColumn) goodsTable.getColumns().get(2))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("price"));
+			((TableColumn) goodsTable.getColumns().get(3))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("count"));
+			((TableColumn) goodsTable.getColumns().get(4))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("type"));
+			goodsTable.setItems(FXCollections.observableArrayList(MapToGoods.to(gv.getGoods())));
+		} else {
+			// 失败
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@FXML
+	void recordKeyOnKeyReleased(Event e) throws Exception {
+		if (recordKey.getText() == null) {
+			return;
+		}
+		Container.choiceKey = recordKey.getText();
+		String responseBody = null;
+		try {
+			if (Container.choiceType == 1 || Container.choiceType == 2 || Container.choiceType == 3
+					|| Container.choiceType == 4) {
+				if (Container.choiceKey != null) {
+					responseBody = Http.getConnect("http://localhost:8080/storage/record/list?type="
+							+ Container.choiceType + "&key=" + Container.choiceKey, Container.token);
+				} else {
+					responseBody = Http.getConnect(
+							"http://localhost:8080/storage/record/list?type=" + Container.choiceType, Container.token);
+				}
+
+			} else {
+				if (Container.choiceKey != null) {
+					responseBody = Http.getConnect(
+							"http://localhost:8080/storage/record/list" + "?key=" + Container.choiceKey,
+							Container.token);
+				} else {
+					responseBody = Http.getConnect("http://localhost:8080/storage/record/list", Container.token);
+				}
+
+			}
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
+		if (Http.CODE == 200) {
+			// 成功
+			RecordVo rv = new Gson().fromJson(responseBody, RecordVo.class);
+			pagination.setPageCount(rv.getCount() % 16 == 0 ? rv.getCount() / 16 : rv.getCount() / 16 + 1);
+			((TableColumn) recordsTable.getColumns().get(0))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("id"));
+			((TableColumn) recordsTable.getColumns().get(1))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("type"));
+			((TableColumn) recordsTable.getColumns().get(2))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("comment"));
+			((TableColumn) recordsTable.getColumns().get(3))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("price"));
+			((TableColumn) recordsTable.getColumns().get(4))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("create_time"));
+			((TableColumn) recordsTable.getColumns().get(5))
+					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("goods_name"));
+			recordsTable.setItems(FXCollections.observableArrayList(MapToRecords.to(rv.getRecords())));
+		} else {
+			// 失败
+		}
+	}
+
+	@FXML
+	void goodsManageOnMouseClicked() {
+
+		if (Container.permission == 1) {
+			// do nothing
+		} else if (Container.permission == 2) {
+
+		} else {
+			addGoodsButton.setVisible(false);
+			inoutButton.setVisible(false);
+			changePriceButton.setVisible(false);
+		}
+
+	}
+
+	@FXML
+	void recordManageOnMouseClicked() {
+		if (Container.permission == 1) {
+			// do nothing
+		} else if (Container.permission == 2) {
+
+		} else {
+			addRecordsButton.setVisible(false);
+		}
+	}
+
+	@FXML
+	void dataManageOnMouseClicked() {
+		if (Container.permission == 1) {
+			// do nothing
+		} else if (Container.permission == 2) {
+
+		} else {
+			outputDataButton.setVisible(false);
+		}
+	}
+
+	@FXML
+	void userManageOnMouseClicked() {
+		if (Container.permission == 1) {
+			// do nothing
+		} else if (Container.permission == 2) {
+			registerUserButton.setVisible(false);
+		} else {
+			registerUserButton.setVisible(false);
+		}
+	}
+
+	@SuppressWarnings("unused")
 	@FXML
 	void chooseRecordDataFileButtonOnMouseClicked() throws Exception {
 		inDataTip.setVisible(false);
@@ -225,6 +659,7 @@ public class DataController {
 	}
 
 	// copy from other method not modify
+	@SuppressWarnings("unused")
 	@FXML
 	void chooseGoodsDataFileButtonOnMouseClicked() throws Exception {
 		inDataTip.setVisible(false);
@@ -315,6 +750,7 @@ public class DataController {
 		addView.setVisible(false);
 		listView.setVisible(false);
 		profitView.setVisible(false);
+		typeView.setVisible(false);
 		userManageView.setVisible(true);
 		changePassPane.setVisible(false);
 		registerPane.setVisible(true);
@@ -394,6 +830,7 @@ public class DataController {
 		listView.setVisible(false);
 		profitView.setVisible(false);
 		userManageView.setVisible(true);
+		typeView.setVisible(false);
 		changePassPane.setVisible(true);
 		registerPane.setVisible(false);
 		changePassTip.setVisible(false);
@@ -419,6 +856,7 @@ public class DataController {
 		listView.setVisible(false);
 		userManageView.setVisible(false);
 		profitView.setVisible(false);
+		typeView.setVisible(false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -433,6 +871,8 @@ public class DataController {
 		listView.setVisible(false);
 		userManageView.setVisible(false);
 		profitView.setVisible(false);
+		typeView.setVisible(false);
+
 		outputChoiceBox1.setItems(FXCollections.observableArrayList("库存商品", "账务记录"));
 		outputChoiceBox1.getSelectionModel().selectedIndexProperty()
 				.addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
@@ -515,7 +955,13 @@ public class DataController {
 			ProfitVo gv = new Gson().fromJson(responseBody, ProfitVo.class);
 			inCome.setText(gv.getEarn() + "");
 			outCome.setText(gv.getCost() + "");
-			in_outCome.setText((gv.getEarn() - gv.getCost()) + "");
+			DecimalFormat formater = new DecimalFormat();
+			// 保留几位小数
+			formater.setMaximumFractionDigits(1);
+			// 模式 四舍五入
+			formater.setRoundingMode(RoundingMode.UP);
+			// 输出4.02
+			in_outCome.setText(formater.format(gv.getEarn() - gv.getCost()));
 		} else {
 
 		}
@@ -529,6 +975,7 @@ public class DataController {
 		profitView.setVisible(true);
 		exceldataView.setVisible(false);
 		userManageView.setVisible(false);
+		typeView.setVisible(false);
 	}
 
 	@FXML
@@ -542,12 +989,12 @@ public class DataController {
 		stage.show();
 		Container.inoutStage = stage;
 		String responseBody = null;
-
 		responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?id=" + Container.goodsIdOfInout,
 				Container.token);
 
 		if (Http.CODE == 200) {
 			GoodsVo gv = new Gson().fromJson(responseBody, GoodsVo.class);
+			System.out.println(gv + " 2");
 			((TextField) root.getChildren().get(1)).setText(gv.getGoods().get(0).getName());
 			((TextField) root.getChildren().get(2)).setText(gv.getGoods().get(0).getCount() + "");
 		} else {
@@ -562,7 +1009,7 @@ public class DataController {
 		Pane root = FXMLLoader.load(getClass().getResource("price.fxml"));
 		Scene scene = new Scene(root);
 		Stage stage = new Stage();
-		stage.setTitle("修改价格");
+		stage.setTitle("编辑商品");
 		stage.setScene(scene);
 		stage.show();
 		Container.inoutStage = stage;
@@ -575,6 +1022,8 @@ public class DataController {
 			GoodsVo gv = new Gson().fromJson(responseBody, GoodsVo.class);
 			((TextField) root.getChildren().get(1)).setText(gv.getGoods().get(0).getName());
 			((TextField) root.getChildren().get(3)).setText(gv.getGoods().get(0).getPrice() + "");
+			((ChoiceBox<String>) root.getChildren().get(4)).setItems(FXCollections.observableArrayList("生产的商品"));
+			((ChoiceBox<String>) root.getChildren().get(4)).getSelectionModel().select(0);
 		} else {
 
 		}
@@ -584,21 +1033,62 @@ public class DataController {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@FXML
 	void listGoodsButtonOnMouseClicked(Event event) throws Exception {
+		Container.choiceType = 0;
+		Container.choiceKey = null;
+		goodsKey.clear();
+		if (Container.permission != 1 && Container.permission != 2) {
+			inoutButton.setVisible(false);
+			changePriceButton.setVisible(false);
+		} else {
+			inoutButton.setVisible(true);
+			changePriceButton.setVisible(true);
+		}
 		goodsChoice.setVisible(true);
 		recordsChoice.setVisible(false);
-		goodsChoice.setItems(FXCollections.observableArrayList("所有商品", "生产的商品", "购买的商品"));
+		goodsKey.setVisible(true);
+		recordKey.setVisible(false);
+
+		String r = null;
+		r = Http.getConnect("http://localhost:8080/storage/type/g_list", Container.token);
+		if (Http.CODE == 200) {
+
+			List<GType> gv = new Gson().fromJson(r, new TypeToken<List<GType>>() {
+			}.getType());
+			Container.gType = gv;
+			List<String> gs = new ArrayList<>();
+			gs.add("所有库存");
+			for (GType g : gv) {
+				gs.add(g.getG_name());
+			}
+			ObservableList<String> items = FXCollections.observableArrayList(gs);
+			goodsChoice.setItems(items);
+		}
 		goodsChoice.getSelectionModel().selectedIndexProperty()
 				.addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
-					Container.choiceType = newVal.intValue();
+
 					String responseBody = null;
 					try {
-						if (newVal.intValue() == 1 || newVal.intValue() == 2) {
-							responseBody = Http.getConnect(
-									"http://localhost:8080/storage/goods/list?type=" + (newVal.intValue()),
-									Container.token);
-
+						if (newVal.intValue() == 0) {
+							Container.choiceType = 0;
+							if (Container.choiceKey != null) {
+								responseBody = Http.getConnect(
+										"http://localhost:8080/storage/goods/list?key=" + goodsKey.getText(),
+										Container.token);
+							} else {
+								responseBody = Http.getConnect("http://localhost:8080/storage/goods/list",
+										Container.token);
+							}
 						} else {
-							responseBody = Http.getConnect("http://localhost:8080/storage/goods/list", Container.token);
+							int type = Container.gType.get(newVal.intValue() - 1).getId();
+							Container.choiceType = type;
+							if (Container.choiceKey != null) {
+								responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?type=" + type
+										+ "&key=" + goodsKey.getText(), Container.token);
+							} else {
+								responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?type=" + type,
+										Container.token);
+							}
+
 						}
 
 					} catch (Exception e) {
@@ -608,7 +1098,7 @@ public class DataController {
 					if (Http.CODE == 200) {
 						// 成功
 						GoodsVo gv = new Gson().fromJson(responseBody, GoodsVo.class);
-						pagination.setPageCount(gv.getCount() % 20 == 0 ? gv.getCount() / 20 : gv.getCount() / 20 + 1);
+						pagination.setPageCount(gv.getCount() % 16 == 0 ? gv.getCount() / 16 : gv.getCount() / 16 + 1);
 						((TableColumn) goodsTable.getColumns().get(0))
 								.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("id"));
 						((TableColumn) goodsTable.getColumns().get(1))
@@ -627,6 +1117,8 @@ public class DataController {
 						recordsTable.setVisible(false);
 						exceldataView.setVisible(false);
 						userManageView.setVisible(false);
+						typeView.setVisible(false);
+						// goodsTable.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 					} else {
 						// 失败
 						// message.setText((String) new
@@ -641,22 +1133,57 @@ public class DataController {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@FXML
 	void listRecordsButtonOnMouseClicked(Event event) throws Exception {
+		Container.choiceType = 0;
+		Container.choiceKey = null;
+		recordKey.clear();
 		goodsChoice.setVisible(false);
 		recordsChoice.setVisible(true);
-		recordsChoice.setItems(FXCollections.observableArrayList("所有类型", "销售出库类型", "花销类型", "生产入库类型", "修改商品价格类型 "));
+		goodsKey.setVisible(false);
+		recordKey.setVisible(true);
+		inoutButton.setVisible(false);
+		changePriceButton.setVisible(false);
+
+		// 填充账务类型choice
+		String r = null;
+		r = Http.getConnect("http://localhost:8080/storage/type/r_list", Container.token);
+		if (Http.CODE == 200) {
+
+			List<RType> rv = new Gson().fromJson(r, new TypeToken<List<RType>>() {
+			}.getType());
+			Container.rType = rv;
+			List<String> rs = new ArrayList<>();
+			rs.add("所有记录");
+			for (RType r2 : rv) {
+				rs.add(r2.getR_name());
+			}
+			ObservableList<String> items = FXCollections.observableArrayList(rs);
+			recordsChoice.setItems(items);
+		}
+
 		recordsChoice.getSelectionModel().selectedIndexProperty()
 				.addListener((ObservableValue<? extends Number> ov, Number oldVal, Number newVal) -> {
-					Container.choiceType = newVal.intValue();
 					String responseBody = null;
 					try {
-						if (newVal.intValue() == 1 || newVal.intValue() == 2 || newVal.intValue() == 3
-								|| newVal.intValue() == 4) {
-							responseBody = Http.getConnect(
-									"http://localhost:8080/storage/record/list?type=" + newVal.intValue(),
-									Container.token);
+						if (newVal.intValue() == 0) {
+							Container.choiceType = 0;
+							if (Container.choiceKey != null) {
+								responseBody = Http.getConnect(
+										"http://localhost:8080/storage/record/list?key=" + Container.choiceKey,
+										Container.token);
+							} else {
+								responseBody = Http.getConnect("http://localhost:8080/storage/record/list",
+										Container.token);
+							}
 						} else {
-							responseBody = Http.getConnect("http://localhost:8080/storage/record/list",
-									Container.token);
+							int type = Container.rType.get(newVal.intValue() - 1).getId();
+							Container.choiceType = type;
+							if (Container.choiceKey != null) {
+								responseBody = Http.getConnect("http://localhost:8080/storage/record/list?type=" + type
+										+ "&key=" + Container.choiceKey, Container.token);
+							} else {
+								responseBody = Http.getConnect("http://localhost:8080/storage/record/list?type=" + type,
+										Container.token);
+							}
 						}
 
 					} catch (Exception e) {
@@ -665,7 +1192,7 @@ public class DataController {
 					if (Http.CODE == 200) {
 						// 成功
 						RecordVo rv = new Gson().fromJson(responseBody, RecordVo.class);
-						pagination.setPageCount(rv.getCount() % 20 == 0 ? rv.getCount() / 20 : rv.getCount() / 20 + 1);
+						pagination.setPageCount(rv.getCount() % 16 == 0 ? rv.getCount() / 16 : rv.getCount() / 16 + 1);
 						((TableColumn) recordsTable.getColumns().get(0))
 								.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("id"));
 						((TableColumn) recordsTable.getColumns().get(1))
@@ -677,8 +1204,6 @@ public class DataController {
 						((TableColumn) recordsTable.getColumns().get(4))
 								.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("create_time"));
 						((TableColumn) recordsTable.getColumns().get(5))
-								.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("update_time"));
-						((TableColumn) recordsTable.getColumns().get(6))
 								.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("goods_name"));
 						recordsTable.setItems(FXCollections.observableArrayList(MapToRecords.to(rv.getRecords())));
 						listView.setVisible(true);
@@ -688,12 +1213,9 @@ public class DataController {
 						recordsTable.setVisible(true);
 						exceldataView.setVisible(false);
 						userManageView.setVisible(false);
+						typeView.setVisible(false);
 					} else {
 						// 失败
-						// message.setText((String) new
-						// Gson().fromJson(responseBody,
-						// Map.class).get("msg"));
-						// message.setVisible(true);
 					}
 				});
 
@@ -704,14 +1226,24 @@ public class DataController {
 	private Node createRecordsPage(Integer i) {
 		String responseBody = null;
 		try {
-			if (Container.choiceType == 1 || Container.choiceType == 2 || Container.choiceType == 3
-					|| Container.choiceType == 4) {
-				responseBody = Http.getConnect(
-						"http://localhost:8080/storage/record/list?type=" + Container.choiceType + "&page=" + (i + 1),
-						Container.token);
+			if (Container.choiceType == 0) {
+				if (Container.choiceKey != null) {
+					responseBody = Http.getConnect(
+							"http://localhost:8080/storage/record/list?page=" + (i + 1) + "&key=" + Container.choiceKey,
+							Container.token);
+				} else {
+					responseBody = Http.getConnect("http://localhost:8080/storage/record/list?page=" + (i + 1),
+							Container.token);
+				}
 			} else {
-				responseBody = Http.getConnect("http://localhost:8080/storage/record/list?page=" + (i + 1),
-						Container.token);
+				if (Container.choiceKey != null) {
+					responseBody = Http.getConnect("http://localhost:8080/storage/record/list?type="
+							+ (Container.choiceType) + "&page=" + (i + 1) + "&key=" + Container.choiceKey,
+							Container.token);
+				} else {
+					responseBody = Http.getConnect("http://localhost:8080/storage/record/list?type="
+							+ (Container.choiceType) + "&page=" + (i + 1), Container.token);
+				}
 			}
 
 		} catch (Exception e) {
@@ -720,7 +1252,7 @@ public class DataController {
 		if (Http.CODE == 200) {
 			// 成功
 			RecordVo rv = new Gson().fromJson(responseBody, RecordVo.class);
-			pagination.setPageCount(rv.getCount() % 20 == 0 ? rv.getCount() / 20 : rv.getCount() / 20 + 1);
+			pagination.setPageCount(rv.getCount() % 16 == 0 ? rv.getCount() / 16 : rv.getCount() / 16 + 1);
 			((TableColumn) recordsTable.getColumns().get(0))
 					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("id"));
 			((TableColumn) recordsTable.getColumns().get(1))
@@ -732,8 +1264,6 @@ public class DataController {
 			((TableColumn) recordsTable.getColumns().get(4))
 					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("create_time"));
 			((TableColumn) recordsTable.getColumns().get(5))
-					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("update_time"));
-			((TableColumn) recordsTable.getColumns().get(6))
 					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("goods_name"));
 			recordsTable.setItems(FXCollections.observableArrayList(MapToRecords.to(rv.getRecords())));
 			listView.setVisible(true);
@@ -743,6 +1273,7 @@ public class DataController {
 			recordsTable.setVisible(true);
 			exceldataView.setVisible(false);
 			userManageView.setVisible(false);
+			typeView.setVisible(false);
 		} else {
 			// 失败
 			// message.setText((String) new Gson().fromJson(responseBody,
@@ -768,14 +1299,24 @@ public class DataController {
 	private Node createGoodsPage(Integer i) {
 		String responseBody = null;
 		try {
-			if (Container.choiceType == 1 || Container.choiceType == 2) {
-				responseBody = Http.getConnect(
-						"http://localhost:8080/storage/goods/list?type=" + (Container.choiceType) + "&page=" + (i + 1),
-						Container.token);
-
+			if (Container.choiceType == 0) {
+				if (Container.choiceKey != null) {
+					responseBody = Http.getConnect(
+							"http://localhost:8080/storage/goods/list?page=" + (i + 1) + "&key=" + Container.choiceKey,
+							Container.token);
+				} else {
+					responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?page=" + (i + 1),
+							Container.token);
+				}
 			} else {
-				responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?page=" + (i + 1),
-						Container.token);
+				if (Container.choiceKey != null) {
+					responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?type="
+							+ (Container.choiceType) + "&page=" + (i + 1) + "&key=" + Container.choiceKey,
+							Container.token);
+				} else {
+					responseBody = Http.getConnect("http://localhost:8080/storage/goods/list?type="
+							+ (Container.choiceType) + "&page=" + (i + 1), Container.token);
+				}
 			}
 
 		} catch (Exception e) {
@@ -785,7 +1326,7 @@ public class DataController {
 		if (Http.CODE == 200) {
 			// 成功
 			GoodsVo gv = new Gson().fromJson(responseBody, GoodsVo.class);
-			pagination.setPageCount(gv.getCount() % 20 == 0 ? gv.getCount() / 20 : gv.getCount() / 20 + 1);
+			pagination.setPageCount(gv.getCount() % 16 == 0 ? gv.getCount() / 16 : gv.getCount() / 16 + 1);
 			((TableColumn) goodsTable.getColumns().get(0))
 					.setCellValueFactory(new PropertyValueFactory<JXGoodsVo, String>("id"));
 			((TableColumn) goodsTable.getColumns().get(1))
@@ -804,6 +1345,7 @@ public class DataController {
 			recordsTable.setVisible(false);
 			exceldataView.setVisible(false);
 			userManageView.setVisible(false);
+			typeView.setVisible(false);
 		} else {
 			// 失败
 			// message.setText((String) new Gson().fromJson(responseBody,
@@ -819,7 +1361,21 @@ public class DataController {
 	@SuppressWarnings("unchecked")
 	@FXML
 	void addGoodsButtonOnMouseClicked(Event e) throws Exception {
-		addGoodsType.setItems(FXCollections.observableArrayList("生产的商品", "购买的商品"));
+		String responseBody = null;
+		responseBody = Http.getConnect("http://localhost:8080/storage/type/g_list", Container.token);
+		if (Http.CODE == 200) {
+
+			List<GType> gv = new Gson().fromJson(responseBody, new TypeToken<List<GType>>() {
+			}.getType());
+			Container.gType = gv;
+			List<String> gs = new ArrayList<>();
+			for (GType g : gv) {
+				gs.add(g.getG_name());
+			}
+			ObservableList<String> items = FXCollections.observableArrayList(gs);
+			addGoodsType.setItems(items);
+		}
+
 		listView.setVisible(false);
 		addView.setVisible(true);
 		addGoods.setVisible(true);
@@ -827,13 +1383,22 @@ public class DataController {
 		exceldataView.setVisible(false);
 		profitView.setVisible(false);
 		userManageView.setVisible(false);
+		typeView.setVisible(false);
 	}
 
 	@SuppressWarnings("unused")
 	@FXML
 	void ConfirmAddGoodsButtonOnMouseClicked(Event e) throws Exception {
 		String name = addGoodsName.getText();
-		int type = addGoodsType.getSelectionModel().getSelectedIndex() + 1;
+		String t_name = addGoodsType.getSelectionModel().getSelectedItem().toString();
+		int type = 0;
+		for (GType gt : Container.gType) {
+			if (gt.getG_name().equals(t_name)) {
+				type = gt.getId();
+				break;
+			}
+		}
+		// int type = addGoodsType.getSelectionModel().getSelectedIndex() + 1;
 		String price = addGoodsPrice.getText();
 		String count = addGoodsCount.getText();
 		Goods goods = new Goods();
@@ -858,16 +1423,35 @@ public class DataController {
 		listGoodsButtonOnMouseClicked(e);
 	}
 
-	@SuppressWarnings("unused")
 	@FXML
 	void ConfirmAddRecordsButtonOnMouseClicked(Event e) throws Exception {
+		String price_type = priceType.getSelectionModel().getSelectedItem().toString();
+		if (StringUtils.isBlank(price_type)) {
+			return;
+		}
+		int mode = 0;
+		if (price_type.equals("无")) {
+			mode = 0;
+		} else if (price_type.equals("收入")) {
+			mode = 1;
+		} else if (price_type.equals("支出")) {
+			mode = -1;
+		}
+		String r_name = addRecordType.getSelectionModel().getSelectedItem().toString();
+		int type = 0;
+		for (RType rt : Container.rType) {
+			if (rt.getR_name().equals(r_name)) {
+				type = rt.getId();
+				break;
+			}
+		}
+
 		Record record = new Record();
 		record.setComment(addRecordsComment.getText());
-		record.setType(2);
+		record.setType(type);
 		record.setPrice(Double.parseDouble(addRecordsPrice.getText()));
-
-		String responseBody = Http.postConnect("http://localhost:8080/storage/record/add", Container.token,
-				new Gson().toJson(record));
+		record.setMode(mode);
+		Http.postConnect("http://localhost:8080/storage/record/add", Container.token, new Gson().toJson(record));
 		if (Http.CODE == 200) {
 			listGoodsButtonOnMouseClicked(e);
 		} else {
@@ -882,8 +1466,26 @@ public class DataController {
 		listRecordsButtonOnMouseClicked(e);
 	}
 
+	@SuppressWarnings("unchecked")
 	@FXML
-	void addRecordsButtonOnMouseClicked(Event e) {
+	void addRecordsButtonOnMouseClicked(Event e) throws Exception {
+		// 填充账务类型choice
+		String r = null;
+		r = Http.getConnect("http://localhost:8080/storage/type/r_list", Container.token);
+		if (Http.CODE == 200) {
+
+			List<RType> rv = new Gson().fromJson(r, new TypeToken<List<RType>>() {
+			}.getType());
+			Container.rType = rv;
+			List<String> rs = new ArrayList<>();
+			for (RType r2 : rv) {
+				rs.add(r2.getR_name());
+			}
+			ObservableList<String> items = FXCollections.observableArrayList(rs);
+			addRecordType.setItems(items);
+		}
+
+		priceType.setItems(FXCollections.observableArrayList("无", "收入", "支出"));
 		listView.setVisible(false);
 		addView.setVisible(true);
 		addRecords.setVisible(true);
@@ -891,6 +1493,7 @@ public class DataController {
 		exceldataView.setVisible(false);
 		profitView.setVisible(false);
 		userManageView.setVisible(false);
+		typeView.setVisible(false);
 	}
 
 	@FXML

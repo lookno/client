@@ -1,8 +1,10 @@
 package cn.neu.recv;
 
+
 public class UserVo {
 	private String username;
 	private String token;
+	private int permission;
 
 	public String getUsername() {
 		return username;
@@ -20,9 +22,16 @@ public class UserVo {
 		this.token = token;
 	}
 
-	@Override
-	public String toString() {
-		return "UserVo [username=" + username + ", token=" + token + "]";
+	public int getPermission() {
+		return permission;
 	}
 
+	public void setPermission(int permission) {
+		this.permission = permission;
+	}
+
+	@Override
+	public String toString() {
+		return "UserVo [username=" + username + ", token=" + token + ", permission=" + permission + "]";
+	}
 }

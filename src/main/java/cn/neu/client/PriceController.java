@@ -1,5 +1,6 @@
 package cn.neu.client;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 public class PriceController {
 	@FXML
 	private TextField goodsPrice;
+	@SuppressWarnings("unused")
 	@FXML
 	void changeOnMouseClicked(MouseEvent e) throws Exception{
 		String responseBody = null;

@@ -2,6 +2,9 @@ package cn.neu.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.neu.global.Container;
+import cn.neu.recv.GType;
 import cn.neu.recv.Goods;
 import cn.neu.vo.JXGoodsVo;
 
@@ -11,11 +14,12 @@ public class MapToGoods {
 		for (int i = 0; i < list.size(); i++) {
 			Goods g = list.get(i);
 			int t = g.getType();
-			JXGoodsVo jg =null;
-			if(t==1){
-				jg = new JXGoodsVo(g.getId() + "", g.getPrice() + "", g.getName(), g.getCount() + "","生产的商品");
-			}else if(t==2){
-				jg = new JXGoodsVo(g.getId() + "", g.getPrice() + "", g.getName(), g.getCount() + "","购入的商品");
+			JXGoodsVo jg = null;
+			for (GType gt : Container.gType) {
+				if (t == gt.getId()) {
+					jg = new JXGoodsVo(g.getId() + "", g.getPrice() + "", g.getName(), g.getCount() + "",
+							gt.getG_name());
+				}
 			}
 			goods.add(jg);
 		}

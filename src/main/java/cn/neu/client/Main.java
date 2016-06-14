@@ -13,7 +13,7 @@ public class Main extends Application {
 		try {
 			Pane root = FXMLLoader.load(getClass().getResource("login.fxml"));
 			Scene scene = new Scene(root);
-			stage.setTitle("登录");
+			stage.setTitle("找回密码");
 			stage.setScene(scene);
 			stage.show();
 			Container.root = root;

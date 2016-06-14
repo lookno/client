@@ -11,7 +11,6 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -131,7 +130,10 @@ public class UserController {
 			UserVo uv = new Gson().fromJson(responseBody, UserVo.class);
 			Container.token = uv.getToken();
 			Pane root = FXMLLoader.load(getClass().getResource("main.fxml"));
+			int per = uv.getPermission();
+			Container.permission = per;
 			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("bootstrap3.css").toExternalForm());
 			Stage stage = new Stage();
 			stage.setTitle("仓储管理系统");
 			stage.setScene(scene);

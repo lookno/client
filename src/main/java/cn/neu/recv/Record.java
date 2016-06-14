@@ -1,5 +1,6 @@
 package cn.neu.recv;
 
+
 public class Record {
 	private int id;
 	private int goods_id;
@@ -9,6 +10,7 @@ public class Record {
 	private String comment;
 	private double price;
 	private int type;
+	private int mode;
 
 	public int getId() {
 		return id;
@@ -74,11 +76,19 @@ public class Record {
 		this.type = type;
 	}
 
+	public int getMode() {
+		return mode;
+	}
+
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+
 	@Override
 	public String toString() {
 		return "Record [id=" + id + ", goods_id=" + goods_id + ", goods_name=" + goods_name + ", create_time="
 				+ create_time + ", update_time=" + update_time + ", comment=" + comment + ", price=" + price + ", type="
-				+ type + "]";
+				+ type + ", mode=" + mode + "]";
 	}
 
 }

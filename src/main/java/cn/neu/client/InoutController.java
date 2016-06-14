@@ -1,13 +1,11 @@
 package cn.neu.client;
 
+
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.Gson;
-
 import cn.neu.global.Container;
 import cn.neu.http.Http;
-import cn.neu.recv.GoodsVo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -26,12 +24,14 @@ public class InoutController{
 	private Button out;
 	@FXML
 	private Button cancel;
+	@SuppressWarnings("unused")
 	@FXML
 	void outOnMouseClicked(MouseEvent e) throws Exception{
 		String responseBody = null;
 		Map<String, String> map = new HashMap<>();
 		map.put("id", Container.goodsIdOfInout);
 		map.put("count", (-Integer.parseInt(goodsOperCount.getText()))+"");
+		System.out.println(map+" 1");
 		responseBody = Http.postConnect("http://localhost:8080/storage/goods/modify",
 				Container.token,new Gson().toJson(map));
 
@@ -42,6 +42,7 @@ public class InoutController{
 
 		}
 	}
+	@SuppressWarnings("unused")
 	@FXML
 	void inOnMouseClicked(MouseEvent e) throws Exception{
 		String responseBody = null;
